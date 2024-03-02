@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="shortcut icon" href="./images/logo-ekpb.png" type="image/x-icon" />
+  <script src="./js/jquery-3.6.1.min.js"></script>
+  <link rel="stylesheet" href="./style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href='https://fonts.googleapis.com/css?family=Cormorant Garamond' rel='stylesheet'>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant:wght@400;500;600&family=Montserrat:wght@500;600;700&display=swap"
+    rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- AlpineJS -->
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+  <title>Portal e-KPB</title>
+</head>
+
+<body class="relative bg-yellow-main-light -z-50">
+
+  <!-- script -->
+  <script>
+    tailwind.config = {
+      theme: {
+        screens: {
+          'sm': '360px',
+          // => @media (min-width: 400px) { ... }
+
+          'md': '700px',
+          // => @media (min-width: 768px) { ... }
+
+          'lg': '1024px',
+          // => @media (min-width: 1024px) { ... }
+
+          'xl': '1280px',
+          // => @media (min-width: 1280px) { ... }
+
+          '2xl': '2800px',
+          // => @media (min-width: 1536px) { ... }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lightbox -->
+  <div class="fixed inset-0 h-screen w-screen bg-black/80 z-[100]" x-data="{lightboxOpen: false, imgSrc: ''}"
+    x-show="lightboxOpen" x-transition x-cloak @lightbox.window="lightboxOpen = true; imgSrc = $event.detail;">
+    <div class="h-screen w-screen flex justify-center items-center">
+      <div class="relative">
+        <button class="absolute cursor-pointer -top-4 -right-4 rounded-full h-11 w-11 text-3xl bg-white"
+          @click="lightboxOpen = false">&times;</button>
+        <!-- Placeholder for dev -->
+        <iframe class="hidden md:block" width="560" height="315" :src="imgSrc" title="eKPB" frameborder="0"
+          allow="accelerometer; autoplay;  clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen @click.away="lightboxOpen = false, imgSrc =''"></iframe>
+        <iframe class="md:hidden" width="320" height="180" :src="imgSrc" title="eKPB" frameborder="0"
+          allow="accelerometer; autoplay;  clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen @click.away="lightboxOpen = false, imgSrc =''"></iframe>
+        <!-- Replace with this in prod -->
+        <!-- <video class="hidden md:block" width="560" height="315" :src="imgSrc" title="eKPB" controls frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen @click.away="lightboxOpen = false, imgSrc =''" ></video>
+          <video class="md:hidden" width="320" height="180" :src="imgSrc" title="eKPB" controls frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen @click.away="lightboxOpen = false, imgSrc =''" ></video> -->
+      </div>
+    </div>
+  </div>
+  <!-- Lightbox End -->
+  <!-- Floating Button -->
+  <div class="fixed  md:block -right-20 bottom-80 button w-32 h-14 z-50 overflow-visible" x-data="{showBtn : false}">
+    <div class="relative group hover:scale-105 duration-100 overflow-visible"
+      :class="{'right-24 md:right-40 opacity-100' : showBtn, 'right-20 opacity-0' : !showBtn}"
+      @scroll.window="showBtn = (window.pageYOffset > 100) ? true : false" x-cloak>
+      <a href="http://virtualkpb.rimpangdigital.com/" class="text-white font-bold text-center">
+        <p>e-KPB TOUR<br />360</p>
+      </a>
+      <img src="./images/btn.svg" class="absolute w-40 h-24 -top-7 -z-40 object-contain drop-shadow 0" alt="" />
+    </div>
+  </div>
+  <!-- Button End -->
+  <!-- Header -->
+  <header class="fixed md:flex w-full top-0 h-20  py-2 justify-center md:px-10 lg:px-16 bg-yellow-main-light z-50"
+    x-data="{open:false}">
+    <div class="flex flex-col md:flex-row justify-between w-full mx-auto max-w-hd">
+      <div class="flex px-4 gap-2 md:gap-0 justify-between w-full md:w-auto">
+        <a href="index.html" class="flex shrink-0 items-end">
+          <img src="./images/logo-ekpb.png" class="w-20 shrink-0 h-auto" alt="" />
+        </a>
+        <div class="flex justify-center md:hidden">
+          <form class="searchbar flex content-baseline">
+            <input type="search"
+              class="flex w-full md:hidden border-b-[3px] bg-transparent border-green-main focus:outline-none" name=""
+              id="" />
+            <button type="submit" class="ml-1">
+              <i class="fa-solid fa-magnifying-glass fa-xl"></i>
+            </button>
+          </form>
+        </div>
+        <button class="shrink-0 relative burger w-12 md:hidden" @click="open = !open">
+          <img src="./images/bars.svg" class="absolute bottom-0 w-12" alt="" x-show="!open" x-transition x-cloak />
+          <img src="./images/close.svg" class="absolute bottom-0 w-12" alt="" x-show="open" x-transition x-cloak />
+        </button>
+      </div>
+      <!-- Dropdown -->
+      <div class="hidden md:flex">
+        <div class="md:flex gap-7" :class="{'hidden' :!open, 'visible' :open}" x-cloak>
+          <ul
+            class="flex flex-col text-sm pb-4 shadow md:shadow-none md:pb-0 lg:text-base justify-end md:flex-row w-full bg-yellow-main-light text-green-main font-semibold md:gap-2 lg:gap-5">
+            <li
+              class="relative group px-4 my-4 md:px-0 md:my-0 flex md:text-center place-self-end bg-main-yellow md:rounded-xl w-full md:w-20">
+              <a href="index.html" class="w-full h-full z-10">HOME</a>
+              <div
+                class="absolute hidden md:block bottom-1 w-full h-2 bg-green-main-light z-0 opacity-0 group-hover:opacity-100 duration-300">
+              </div>
+            </li>
+            <li
+              class="group flex flex-col px-4 my-4 md:px-0 md:my-0 relative hover:bg-white/10 duration-100 w-full md:w-auto place-self-end"
+              x-data="{dropdownOpen:false}" @mouseover.outside="dropdownOpen = false"
+              @click.outside="dropdownOpen = false">
+              <a href="javascript:void(0)" class="place-self-center w-full h-full z-10" @mouseover="dropdownOpen = true"
+                @click="dropdownOpen = true">
+                PROFILE
+              </a>
+              <div
+                class="absolute hidden md:block bottom-1 w-full h-2 bg-green-main-light z-0 opacity-0 group-hover:opacity-100 duration-300">
+              </div>
+
+              <div class="md:absolute w-full top-6 left-0 bg-white rounded-md text-main-gray md:w-56 shadow-md"
+                x-show="dropdownOpen" x-transition x-transition:leave.duration.400ms x-cloak>
+                <ul class="flex flex-col gap-y-2 py-2 bg-yellow-main">
+                  <li class="flex hover:bg-black/10">
+                    <a href="profile-about.html" class="h-full w-full px-5 py-2">Tentang Kami</a>
+                  </li>
+                  <li class="flex hover:bg-black/10">
+                    <a href="profile-visi.html" class="h-full w-full px-5 py-2">Visi dan Misi</a>
+                  </li>
+                </ul>
+              </div>
+            </li>
+            <li
+              class="relative group flex px-4 my-4 md:px-0 md:my-0 md:text-center place-self-end bg-main-yellow md:rounded-xl w-full md:w-20">
+              <a href="berita.html" class="w-full h-full z-10">BERITA</a>
+              <div
+                class="absolute hidden md:block bottom-1 w-full h-2 bg-green-main-light z-0 opacity-0 group-hover:opacity-100 duration-300">
+              </div>
+            </li>
+
+            <li
+              class="group flex flex-col px-4 my-4 md:px-0 md:my-0 relative hover:bg-white/10 duration-100 w-full md:w-auto place-self-end"
+              x-data="{dropdownOpen:false}" @click.outside="dropdownOpen = false"
+              @mouseover.outside="dropdownOpen = false">
+              <a href="javascript:void(0)" class="place-self-center w-full h-full z-10"
+                @click="dropdownOpen = !dropdownOpen" @mouseover="dropdownOpen = true">
+                GALLERY
+              </a>
+              <div
+                class="absolute hidden md:block bottom-1 w-full h-2 bg-green-main-light z-0 opacity-0 group-hover:opacity-100 duration-300">
+              </div>
+
+              <div class="md:absolute w-full top-6 left-0 bg-white rounded-md text-main-gray md:w-56 shadow-md"
+                x-show="dropdownOpen" x-transition x-transition:leave.duration.500ms x-cloak>
+                <ul class="flex flex-col gap-y-2 py-2 bg-yellow-main">
+                  <li class="flex hover:bg-black/10">
+                    <a href="gallery-foto.html" class="h-full w-full px-5 py-2">GALLERY FOTO</a>
+                  </li>
+                  <li class="flex hover:bg-black/10">
+                    <a href="gallery-video.html" class="h-full w-full px-5 py-2">GALLERY VIDEO</a>
+                  </li>
+                </ul>
+              </div>
+            </li>
+            <li
+              class="relative group flex px-4 my-4 md:px-0 md:my-0 md:text-center md:place-self-end bg-main-yellow md:rounded-xl w-fit">
+              <a href="kontak.html" class="w-full h-full z-10">KONTAK</a>
+              <div
+                class="absolute hidden md:block bottom-1 w-full h-2 bg-green-main-light z-0 opacity-0 group-hover:opacity-100 duration-300">
+              </div>
+            </li>
+            <li
+              class="relative group flex px-4 my-4 md:px-0 md:my-0 md:text-center md:place-self-end bg-main-yellow md:rounded-xl w-fit">
+              <a href="https://e-kpb.lampungprov.go.id/" class="w-full h-full z-10">LINK APLIKASI</a>
+              <div
+                class="absolute hidden md:block bottom-1 w-full h-2 bg-green-main-light z-0 opacity-0 group-hover:opacity-100 duration-300">
+              </div>
+            </li>
+            <li
+              class="relative group flex px-4 my-4 md:px-0 md:my-0 md:text-center md:place-self-end bg-main-yellow md:rounded-xl w-fit">
+              <a href="http://virtualkpb.rimpangdigital.com/" class="w-full h-full z-10">TOUR 360</a>
+              <div
+                class="absolute hidden md:block bottom-1 w-full h-2 bg-green-main-light z-0 opacity-0 group-hover:opacity-100 duration-300">
+              </div>
+            </li>
+            <li
+              class="hidden md:flex flex-col relative md:h-full hover:bg-white/10 duration-100 w-full md:w-auto justify-end"
+              x-data="{dropdownOpen:false}" @click.outside="dropdownOpen = false" x-cloak>
+              <a href="javascript:void(0)" class="w-7 px-2 relative" @click="dropdownOpen = !dropdownOpen">
+                <img src="./images/search.svg" class="absolute bottom-0 w-12" alt="" x-show="!dropdownOpen" x-transition
+                  x-cloak />
+                <img src="./images/close.svg" class="absolute bottom-0 w-12" alt="" x-show="dropdownOpen" x-transition
+                  x-cloak />
+              </a>
+              <div
+                class="md:absolute md:flex w-full md:justify-center md:content-center top-[72px] right-0 rounded-md text-main-gray md:w-fit md:px-4 md:h-20 shadow-md bg-yellow-main"
+                x-show="dropdownOpen" x-transition x-cloak>
+                <ul class="flex items-center">
+                  <form action="" class="flex items-end" x-show="dropdownOpen"
+                    x-transition:enter="transition ease-out duration-500"
+                    x-transition:enter-start="translate-y-10 opacity-0"
+                    x-transition:enter-end="-translate-y-0 opacity-100" x-cloak>
+                    <input type="search" placeholder="Search..."
+                      class="bg-transparent focus:outline-none px-4 w-52 border-b border-black p-2" name="" id="" />
+                    <button type="submit" class="flex -ml-8 w-7 mb-2 bg-yellow-main">
+                      <img src="./images/search.svg" alt="" />
+                    </button>
+                  </form>
+                </ul>
+              </div>
+            </li>
+          </ul>
+          <a href="template.html" class="burger w-9 hidden md:flex items-end hover:brightness-110">
+            <img src="./images/logo-wa.svg" alt="" />
+          </a>
+        </div>
+      </div>
+      <!-- Mobile -->
+      <div class="md:hidden">
+        <div class="md:flex gap-7" :class="{'hidden' :!open, 'visible' :open}" x-cloak>
+          <ul
+            class="flex flex-col text-sm py-8 gap-10 shadow md:shadow-none md:pb-0 lg:text-base justify-end md:flex-row w-full bg-yellow-main-light text-green-main font-semibold lg:gap-5">
+            <li
+              class="relative group px-4 md:px-0 md:my-0 flex md:text-center place-self-end bg-main-yellow md:rounded-xl w-full md:w-20">
+              <a href="index.html" class="w-full h-full z-10">HOME</a>
+              <div
+                class="absolute hidden md:block bottom-1 w-full h-2 bg-green-main-light z-0 opacity-0 group-hover:opacity-100 duration-300">
+              </div>
+            </li>
+            <li class="group flex flex-col px-4 md:px-0 md:my-0 relative duration-100 w-full md:w-auto place-self-end"
+              x-data="{dropdownOpen:false}" @click.outside="dropdownOpen = false">
+              <a href="javascript:void(0)" class="flex justify-between place-self-center w-full h-full z-10"
+                @click="dropdownOpen = !dropdownOpen">
+                PROFILE <i class="fa-solid fa-chevron-down"></i>
+              </a>
+              <div
+                class="absolute hidden md:block bottom-1 w-full h-2 bg-green-main-light z-0 opacity-0 group-hover:opacity-100 duration-300">
+              </div>
+
+              <div class="md:absolute w-full top-6 left-0 bg-white rounded-md text-main-gray md:w-56 shadow-md"
+                x-show="dropdownOpen" x-transition x-transition:leave.duration.400ms x-cloak>
+                <ul class="flex flex-col gap-y-2 py-2 bg-yellow-main">
+                  <li class="flex hover:bg-black/10">
+                    <a href="profile-about.html" class="h-full w-full px-5 py-2">Tentang Kami</a>
+                  </li>
+                  <li class="flex hover:bg-black/10">
+                    <a href="profile-visi.html" class="h-full w-full px-5 py-2">Visi dan Misi</a>
+                  </li>
+                </ul>
+              </div>
+            </li>
+            <li
+              class="relative group flex px-4 md:px-0 md:my-0 md:text-center place-self-end bg-main-yellow md:rounded-xl w-full md:w-20">
+              <a href="berita.html" class="w-full h-full z-10">BERITA</a>
+              <div
+                class="absolute hidden md:block bottom-1 w-full h-2 bg-green-main-light z-0 opacity-0 group-hover:opacity-100 duration-300">
+              </div>
+            </li>
+
+            <li class="group flex flex-col px-4 md:px-0 md:my-0 relative duration-100 w-full md:w-auto place-self-end"
+              x-data="{dropdownOpen:false}" @click.outside="dropdownOpen = false">
+              <a href="javascript:void(0)" class="flex justify-between place-self-center w-full h-full z-10"
+                @click="dropdownOpen = !dropdownOpen">
+                GALLERY <i class="fa-solid fa-chevron-down"></i>
+              </a>
+              <div
+                class="absolute hidden md:block bottom-1 w-full h-2 bg-green-main-light z-0 opacity-0 group-hover:opacity-100 duration-300">
+              </div>
+
+              <div class="md:absolute w-full top-6 left-0 bg-white rounded-md text-main-gray md:w-56 shadow-md"
+                x-show="dropdownOpen" x-transition x-transition:leave.duration.500ms x-cloak>
+                <ul class="flex flex-col gap-y-2 py-2 bg-yellow-main">
+                  <li class="flex hover:bg-black/10">
+                    <a href="gallery-foto.html" class="h-full w-full px-5 py-2">GALLERY FOTO</a>
+                  </li>
+                  <li class="flex hover:bg-black/10">
+                    <a href="gallery-video.html" class="h-full w-full px-5 py-2">GALLERY VIDEO</a>
+                  </li>
+                </ul>
+              </div>
+            </li>
+            <li
+              class="relative group flex px-4 md:px-0 md:my-0 md:text-center md:place-self-end bg-main-yellow md:rounded-xl w-fit">
+              <a href="kontak.html" class="w-full h-full z-10">KONTAK</a>
+              <div
+                class="absolute hidden md:block bottom-1 w-full h-2 bg-green-main-light z-0 opacity-0 group-hover:opacity-100 duration-300">
+              </div>
+            </li>
+            <li
+              class="relative group flex px-4 md:px-0 md:my-0 md:text-center md:place-self-end bg-main-yellow md:rounded-xl w-fit">
+              <a href="link.html" class="w-full h-full z-10">LINK APLIKASI</a>
+              <div
+                class="absolute hidden md:block bottom-1 w-full h-2 bg-green-main-light z-0 opacity-0 group-hover:opacity-100 duration-300">
+              </div>
+            </li>
+            <li
+              class="relative group flex px-4 md:px-0 md:my-0 md:text-center md:place-self-end bg-main-yellow md:rounded-xl w-fit">
+              <a href="http://virtualkpb.rimpangdigital.com/" class="w-full h-full z-10">TOUR 360</a>
+              <div
+                class="absolute hidden md:block bottom-1 w-full h-2 bg-green-main-light z-0 opacity-0 group-hover:opacity-100 duration-300">
+              </div>
+            </li>
+            <li
+              class="hidden md:flex flex-col relative md:h-full hover:bg-white/10 duration-100 w-full md:w-auto justify-end"
+              x-data="{dropdownOpen:false}" @click.outside="dropdownOpen = false" x-cloak>
+              <a href="javascript:void(0)" class="w-10 px-2 relative" @click="dropdownOpen = !dropdownOpen">
+                <img src="./images/search.svg" class="absolute bottom-0 w-12" alt="" x-show="!dropdownOpen" x-transition
+                  x-cloak />
+                <img src="./images/close.svg" class="absolute bottom-0 w-12" alt="" x-show="dropdownOpen" x-transition
+                  x-cloak />
+              </a>
+              <div
+                class="md:absolute md:flex w-full md:justify-center md:content-center top-[72px] right-0 rounded-md text-main-gray md:w-fit md:px-4 md:h-20 shadow-md bg-yellow-main"
+                x-show="dropdownOpen" x-transition x-cloak>
+                <ul class="flex items-center">
+                  <form action="" class="flex items-end" x-show="dropdownOpen"
+                    x-transition:enter="transition ease-out duration-500"
+                    x-transition:enter-start="translate-y-10 opacity-0"
+                    x-transition:enter-end="-translate-y-0 opacity-100" x-cloak>
+                    <input type="search" placeholder="Search..."
+                      class="bg-transparent focus:outline-none px-4 w-52 border-b border-black p-2" name="" id="" />
+                    <button type="submit" class="flex -ml-8 w-7 mb-2 bg-yellow-main">
+                      <img src="./images/search.svg" alt="" />
+                    </button>
+                  </form>
+                  <!-- <li class="flex hover:bg-black/10">
+                    <a href="berita.html" class="h-full w-full px-5 py-2"
+                      >GALLERY FOTO</a
+                    >
+                  </li>
+                  <li class="flex hover:bg-black/10">
+                    <a href="berita.html" class="h-full w-full px-5 py-2"
+                      >GALLERY VIDEO</a
+                    >
+                  </li> -->
+                </ul>
+              </div>
+            </li>
+          </ul>
+          <!-- <a href="" class="burger w-12 hidden md:flex items-end">
+            <img src="./images/search.svg" alt="" />
+          </a> -->
+          <a href="download.html" class="burger w-12 hidden md:flex items-end hover:brightness-110">
+            <img src="./images/logo-wa.svg" alt="" />
+          </a>
+        </div>
+      </div>
+      <!-- Dropdown End -->
+    </div>
+  </header>
+  <!-- Header End -->
+  <!-- Hero -->
+  <section class="hero mt-5 max-w-hd mx-auto ">
+    <div class="relative  flex flex-col justify-center items-center  md:h-max md:bottom-40">
+      <div class="relative z-20 flex  sm:mt-[300px] md:mt-[320px] lg:mt-[170px] xl:mt-[130px] 2xl:mt-[-300px] right-10  ">
+
+        <a href="https://aplikasi.kartupetaniberjaya.com/auth/login" target="_blank"
+          class="group relative font-bold bg-yellow-main px-2 text-white shadow-md shadow-black/50 hover:bg-green-secondary hover:text-green-main duration-300 rounded-2xl ml-auto  sm:top-[-220px] sm:left-[150px] sm:h-[30px] sm:w-[100px] md:mr-[6px] md:top-[-70px] md:w-[220px] md:left-[200px] md:h-[30px] lg:top-[120px] lg:left-[300px] lg:w-[240px] lg:h-[30px] xl:w-[270px] xl:h-[40px] xl:top-[200px] xl:left-[400px] 2xl:w-[420px] 2xl:h-[60px] 2xl:top-[700px] 2xl:left-[600px]">
+          <span class="  sm:px-1  md:px-2 lg:px-2 xl:py-2 2xl:py-2 font-Montserrat text-green-main sm:text-[7px]  md:text-[17px] lg:text-[19px] xl:text-[22px] 2xl:text-[35px] ">Daftar/Masuk e-KPB </span>
+        </a>
+      </div>
+      <p
+        class="judul  left-28  text-green-main font-bold relative sm:left-[-70px] sm:top-[-220px] sm:text-[9px]  md:ml-[-100px] md:text-[25px] md:top-[-60px] lg:top-[150px] lg:left-[-160px] lg:text-[40px] 2xl:text-[70px] 2xl:top-[750px] bg-green-main-light bg-opacity-30 font-Montserrat ">
+        Kartu Petani Berjaya <br> berbasis elektronik</p>
+      <img src="./images/hero-potrait03.png"
+        class="potrait ml-auto relative sm:invisible md:visible sm:ml-[80px] sm:w-[90px] sm:right-[-50px] sm:top-[-213px] md:w-[200px] md:top-[-63px] md:left-[130px] lg:w-[350px] lg:top-[37px] lg:left-[230px] xl:w-[400px] xl:top-[225px] xl:left-[300px] 2xl:w-[800px] 2xl:top-[835px] 2xl:left-[490px]"
+        alt="">
+      <img src="./images/1_aset pattern lampung.svg"
+        class="absolute -bottom-32 -left-48 md:-left-72 opacity-50 md:max-w-3xl -z-10 md:w-2/4" alt="" />
+        
+       
+            <div class="slider   sm:w-[360px] sm:h-[150px] md:w-[600px] md:h-[300px] lg:w-[900px] lg:h-[400px] xl:w-[1100px] xl:h-[590px] 2xl:w-[1900px] 2xl:h-[1200px]">
+        
+              <div class="slides ">
+             
+                <input type="radio" name="radio-btn" id="radio1">
+                <input type="radio" name="radio-btn" id="radio2">
+                <input type="radio" name="radio-btn" id="radio3">
+                <input type="radio" name="radio-btn" id="radio4">
+              
+                <div class="slide first">
+                  <img src="./images/2.jpg" alt="">
+                </div>
+                <div class="slide">
+                  <img src="./images/1.jpg" alt="">
+                </div>
+                <div class="slide">
+                  <img src="./images/5.jpg" alt="">
+                </div>
+                <div class="slide">
+                  <img src="./images/6.jpg" alt="">
+                </div>
+      
+               
+              
+    
+          </div>
+        
+   
+      
+        <a href="#berita" class="">
+        <p class=" text-center text-white font-bold sm:text-[5px] md:text-[10px] xl:text-[15px] 2xl:text-[25px] sm:mt-[-380px] md:mt-[-250px] lg:mt-[-150px] xl:mt-[15px] 2xl:mt-[590px]   ">Scroll Ke <br> BERITA & ARTIKEL <br> </p>
+        <p class="justify-center flex"><img src="./images/panah.png" class="sm:w-[10px] xl:w-[25px] 2xl:w-[35px]" alt=""></p>
+      </a>
+      
+        <!--manual navigation start-->
+        <!-- <div class="navigation-manual">
+        <label for="radio1" class="manual-btn"></label>
+        <label for="radio2" class="manual-btn"></label>
+        <label for="radio3" class="manual-btn"></label>
+        <label for="radio4" class="manual-btn"></label>
+      </div> -->
+        <!--manual navigation end-->
+      </div>
+    
+      <!--image slider end-->
+
+      <script type="text/javascript">
+        var counter = 1;
+        setInterval(function () {
+          document.getElementById('radio' + counter).checked = true;
+          counter++;
+          if (counter > 4) {
+            counter = 1;
+          }
+        }, 5000);
+      </script>
+
+    </div>
+
+    <div class="news w-full mt-10" id="berita">
+      <h2 class="text-center mb-10 text-2xl md:text-4xl font-bold">
+        BERITA & ARTIKEL
+      </h2>
+      <div class="card flex flex-col md:flex-row justify-center items-center gap-7 md:gap-3 lg:gap-12 duration-100">
+
+        <!-- <a href="berita-details.html"
+              class="group block w-60 md:w-1/6 md:min-w-[256px] bg-white text-green-main font-semibold hover:shadow-md hover:-translate-y-1 duration-75 sm:w-[400px]">
+              <img src="./images/news.jpg" class="h-48 md:h-56 lg:h-64 w-full object-cover" alt="" />
+              <div class="description px-3 pb-6">
+                <p class="my-3 text-xs md:text-base font-bold group-hover:underline">
+                  Lorem Ipsum is simply dummy text of the printing and typesetting
+                  industry.
+                </p>
+                <p class="text-xs md:text-sm mt-5 text-orange-main font-normal">
+                  AUTHOR, April 22/2022
+                </p>
+              </div>
+            </a>
+     
+            <a href="berita-details.html"
+            class="group block w-60 md:w-1/6 md:min-w-[256px] bg-white text-green-main font-semibold hover:shadow-md hover:-translate-y-1 duration-75">
+            <img src="./images/news.jpg" class="h-48 md:h-56 lg:h-64 w-full object-cover" alt="" />
+            <div class="description px-3 pb-6">
+              <p class="my-3 text-xs md:text-base font-bold group-hover:underline">
+                Lorem Ipsum is simply dummy text of the printing and typesetting
+                industry.
+              </p>
+              <p class="text-xs md:text-sm mt-5 text-orange-main font-normal">
+                AUTHOR, April 22/2022
+              </p>
+            </div>
+          </a>
+
+        <a href="berita-details.html"
+          class="group block w-60 md:w-1/6 md:min-w-[256px] bg-white text-green-main font-semibold hover:shadow-md hover:-translate-y-1 duration-75 sm:flex md:block">
+          <img src="./images/news.jpg" class="h-48 md:h-56 lg:h-64 w-full object-cover" alt="" />
+          <div class="description px-3 pb-6">
+            <p class="my-3 text-xs md:text-base font-bold group-hover:underline">
+              Lorem Ipsum is simply dummy text of the printing and typesetting
+              industry.
+            </p>
+            <p class="text-xs md:text-sm mt-5 text-orange-main font-normal">
+              AUTHOR, April 22/2022
+            </p>
+          </div>
+        </a> -->
+        <a href="berita-details.html"
+          class=" bg-white rounded-xl shadow-md overflow-hidden  sm:w-[350px]   duration-75 hover:shadow-md hover:-translate-y-1 ">
+          <div class="sm:flex md:block">
+            <div class="sm:shrink-0">
+              <img class=" sm:w-40 sm:h-48 h-auto md:w-[350px]   object-cover " src="./images/news.jpg" alt="">
+            </div>
+            <div class="p-6">
+              <!-- <div class="uppercase tracking-wide text-sm text-indigo-500 font-semibold">Company retreats</div> -->
+              <p
+                class="block mt-1 text-lg leading-tight hover:underline my-3  text-green-main md:text-base font-bold sm:text-[13px]">
+                Bimtek dan Sosialisasi Kepada Kelompok Tani Lampung Selatan, Untuk Percepatan Implementasi Kartu
+                Petani...</p>
+              <p class="text-xs md:text-sm mt-5 text-orange-main font-normal">
+                AUTHOR, April 22/2022
+              </p>
+            </div>
+          </div>
+        </a>
+        <a href="berita-details.html"
+          class="  bg-white rounded-xl shadow-md overflow-hidden sm:w-[350px]  duration-75 hover:shadow-md hover:-translate-y-1">
+          <div class="sm:flex md:block">
+            <div class="sm:shrink-0">
+              <img class="sm:w-40 sm:h-48 h-auto md:w-[350px] object-cover  " src="./images/news.jpg" alt="">
+            </div>
+            <div class="p-6">
+              <!-- <div class="uppercase tracking-wide text-sm text-indigo-500 font-semibold">Company retreats</div> -->
+              <p
+                class="block mt-1 text-lg leading-tight hover:underline my-3   text-green-main md:text-base font-bold sm:text-[13px]">
+                Bimtek e-KPB di Kabupaten Mesuji.</p>
+              <p class="text-xs md:text-sm mt-5 text-orange-main font-normal">
+                AUTHOR, April 22/2022
+              </p>
+            </div>
+          </div>
+        </a>
+        <a href="berita-details.html"
+          class="md:w-72  bg-white rounded-xl shadow-md overflow-hidden  sm:w-[350px]  duration-75 hover:shadow-md hover:-translate-y-1">
+          <div class="sm:flex md:block">
+            <div class="sm:shrink-0">
+              <img class="sm:w-40 sm:h-48 h-auto md:w-[350px] object-cover " src="./images/news.jpg" alt="">
+            </div>
+            <div class="p-6">
+              <!-- <div class="uppercase tracking-wide text-sm text-indigo-500 font-semibold">Company retreats</div> -->
+              <p
+                class="block mt-1 text-lg leading-tight hover:underline my-3 text-green-main md:text-base font-bold sm:text-[13px]">
+                Sinergi Program KPB dan Makmur akan direalisasikan untuk Kelompok Tani Hutan.</p>
+              <p class="text-xs md:text-sm mt-5 text-orange-main font-normal">
+                AUTHOR, April 22/2022
+              </p>
+            </div>
+          </div>
+        </a>
+
+      </div>
+      <div class="flex justify-center">
+        <a href="berita.html" class="group">
+          <h2 class="text-center my-5 text-2xl group-hover:underline">
+            View More...
+          </h2>
+        </a>
+      </div>
+    </div>
+
+    <div class="relative flex flex-col md:flex-row md:justify-between bg-yellow-main" x-data>
+      <img src="./images/pattern1.png" class=" mt-32  w-56 opacity-50 sm:invisible md:visible  " alt="">
+      <div class="relative flex video_container  md:w-8/12 overflow-hidden mx-auto">
+        <img src="./images/hero-img02.jpg" class="  " alt="Video Thumbnail" />
+        <div class="absolute bg-yellow-main/25 top-0 left-0 w-full h-full flex ">
+          <button class="rounded-full bg-black/50 hover:bg-black/75 w-24 h-24 text-white m-auto duration-100"
+            @click="$dispatch('lightbox', 'https://drive.google.com/file/d/1dkhnyuPfOvnUZJD_sx06-HdUU7-OkJ7H/preview')">
+            <i class="fa-solid fa-play fa-2xl"></i>
+          </button>
+        </div>
+
+      </div>
+      <img src="./images/pattern2.png" class=" mt-32 w-56 opacity-50 sm:invisible md:visible " alt="">
+    </div>
+
+    <!--  -->
+  </section>
+  <!-- Hero End -->
+  <!-- Content -->
+  <section class="relative bg-yellow-main-light py-5 overflow-hidden -z-20 max-w-hd mx-auto ">
+    <img src="./images/1_aset pattern lampung.svg"
+      class="absolute -top-52 -left-52 opacity-50 rotate-[121deg] -z-10 md:w-[550px]" alt="" />
+    <div class="flex flex-col md:flex-row md:justify-center md:pt-28 md:py-20 duration-100 gap-2">
+      <h1 class="pl-3 lg:pl-0 mt-6 md:mt-0 z-10 lg:w-5/12 md:text-9xl lg:text-[160px] md:text-center md:self-center sm:text-6 xl">
+        e-KPB
+      </h1>
+      <p class="text-green-main px-7 md:px-0 md:w-5/12 font-medium md:self-center md:text-lg lg:text-2xl">
+        e-KPB merupakan perluasan fungsi teknologi informasi terintegrasi dari
+        Program Kartu Petani Berjaya, fungsi ini berkaitan dengan penggabungan
+        proses dengan beberapa layanan Unggulan Pemerintah Daerah Provinsi
+        Lampung
+      </p>
+    </div>
+    <!-- News -->
+
+    <!-- News End -->
+    <!-- Services -->
+    <div class="services px-5">
+      <div class="bg-yellow-main py-6 md:py-12">
+        <h2 class="md:text-4xl">LAYANAN e-KPB</h2>
+        <div class="card-container flex flex-col md:flex-row gap-5 px-10 mt-10 lg:px-28">
+          <div class="group max-w-[258px] relative hover:bg-orange-main px-4 pb-5 pt-4 mx-auto">
+            <div class="bg-yellow-main text-yellow-main">
+              <!-- <img
+                  src="./images/2_aset pattern2.svg"
+                  class="absolute opacity-50"
+                  alt=""
+                /> -->
+              <svg class="absolute fill-green-main/50 group-hover:fill-yellow-main-light/50" viewBox="0 0 1920 141.4"
+                preserveAspectRatio="none">
+                <path
+                  d="M1430.6,119.8c-9.8.2-14.3-1.8-13.4-12.1,1-12.3.3-24.8.1-37.2-.1-3.4,1.7-8.6-4.7-9s-6,4.4-5.7,8.2c.6,7.3-2.1,11.1-10.5,10.1-7-.8-11.3,1.4-10.3,8.9.9,7-2.5,10-9.9,9.4-6.4-.6-8.1,3.3-7.3,8.1,2,11.8-4,15.1-15.4,13.6a42,42,0,0,0-8.7-.2c-9.2.8-13.5-2.5-12.1-11.6,1-6.3-.9-10.7-9.1-9.9-6.8.7-8.9-3.1-8.2-8.6,1-8-3.1-10.6-10.8-9.7s-10.7-2.3-9.8-9.3c1.2-9.4-5.4-9.2-12.6-9.5-8.6-.3-10.4,3.5-10.1,10.6.4,13.4-.5,26.8.5,40.2.5,6.4-1,8.1-7.5,8.1-48-.1-96-.2-144,0-7,0-9.5-2.3-9.4-8.7.3-13.2.2-26.4-.1-39.6-.1-3.7,2.5-9.5-4.9-9.8-7.6-.3-5.5,5.5-5.4,9.3.1,9.1-4.9,11.1-13.6,14.3s-13.2,14.4-24.1,16.8c-.6.1-.7,3.7-.4,5.5,1.5,9.8-3,13.5-13.2,12.2a46.63,46.63,0,0,0-11.2,0c-8.1.8-12.8-1.4-11.7-10,.9-7.2-1.2-12.3-10.6-11.8-6.7.4-7.1-4.3-6.8-8.7.5-6.8-1.9-10.4-9.7-9.4s-12-1.5-10.9-9.5c1.1-8.3-4.3-9.2-11.5-9.3-8.4-.1-9.3,4.2-9.2,10.4.2,12.8-.3,25.6.1,38.4.2,7.3-2,10.2-10.5,10.2q-70.8-.45-141.5-.1c-8.4.1-10.7-2.9-10.5-10.3.4-12.8.3-25.6,0-38.4-.1-3.7,2.3-9.5-5.2-9.6-6.4,0-5.3,5-5.2,8.6.4,6.7-1.9,10.4-9.8,9.6s-11.5,2.8-11,10.3c.3,5.1-1.6,8.5-7.7,7.9-9-.9-10.6,4-9.7,10.6,1.4,9.8-3.8,12.3-13,11.2a30.53,30.53,0,0,0-7.4,0c-11.2,1.5-17.6-1.5-15.6-13.5.8-4.7-.8-8.7-7.3-8.1-8.6.9-10.9-3.3-10.1-10.4.7-6.1-2.6-8.8-8.8-8-10.5,1.4-12.8-3.6-11.9-12.1.8-7.4-4.1-8.8-11-8.9s-9.6,2.5-9.5,8.9c.2,14.4-.2,28.7.1,43.1.1,6.3-2.1,9-9.3,9q-72-.3-144,0c-7.1,0-9.4-2.4-9.2-8.9.3-13.6.2-27.2,0-40.7-.1-3.5,1.4-8.6-5.2-8.6-6.3.1-5.5,5.1-5.2,8.6.5,6.9-2,10.3-9.7,9.4-8.5-.9-13.7,1.5-13.1,10.7a4.92,4.92,0,0,1-5.3,5.4c-11.5-1.1-12.4,5.2-12,13.5.4,7.9-5.2,11.5-12.9,10.2-6.9-1.2-18.7,6.3-19.1-8.6-.2-6.6-4.1-11.8-11.7-12.4-6.8-.6-8.2-4.1-7.6-9.4.6-6.1-1.3-10.1-8.8-9.2-9.1,1.1-12.9-2.2-12.1-11,.8-7.8-4.8-9.5-11.9-9.9-9.2-.5-8.5,5.3-8.6,10.7-.1,14-.3,27.9-.1,41.9,0,5.8-2.1,8.3-8.7,8.2q-72-.3-144,0c-6.9,0-9.6-2.2-9.5-8.8.3-13.6.2-27.2,0-40.7-.1-3.5,1.5-8.5-5.1-8.7s-5.7,4.8-5.3,8.3c.7,7.5-2.2,11.1-10.5,9.9s-11.4,2.1-10.5,9.8c.7,5.7-2,9-8.5,8.5-8.3-.7-10,3.8-9.1,10.1,1.3,9.2-3.1,12.8-12.7,11.6a30.53,30.53,0,0,0-7.4,0c-11.2,1.5-17.5-1.4-15.6-13.4.7-4.6-.6-8.8-7.2-8.2-8.5.8-10.9-3.4-10.2-10.5.8-7.7-3.6-10.6-11.2-9.9-6.8.6-10-1.7-9.4-8.5.6-6.2-1.3-10.9-9.5-10.1-7.1.6-9.7-3.5-10-9.1a164.88,164.88,0,0,1,.1-18.6c.4-6.8,4-10,11.9-9.9q64.5.45,129.1,0c8.3-.1,10.7,2.8,10.4,10.2-.5,12.4.2,24.8-.1,37.2-.2,7.2,1,11.5,10.6,11.6,8.9,0,10.8-3.7,10-10.6-1-8,2.6-11.6,11.2-10.5,7.7,1,10.4-2.6,10-9.3-.2-4,1.3-7.2,6.2-6.7,9.9,1,12.2-3.9,11.2-11.8-.9-7.4,2.2-10.9,10.5-9.9a41,41,0,0,0,9.9-.1c11.1-1.3,16.7,2.4,14.9,13.5-.9,5.9,2,8.9,8.4,8.2,7.4-.8,9.6,2.8,8.9,8.9-.8,6.9,2,10.2,9.8,9.4s11.4,2.9,11.1,10.3c-.1,3.8-.4,8.4,6,7.9s5-5.3,5-8.9c.2-12.8.6-25.6-.1-38.4-.5-8.9,3.1-11.2,12.1-11.1,42.6.4,85.3.2,127.9.1,4.6,0,8.9,1.5,13.3,2.1,7,.9,8.8,4.5,8.7,10.4-.2,12.4.3,24.8-.2,37.2-.3,7.7,3.9,9,10.6,8.9,6.1,0,11-.7,9.9-8-1.3-8.5,3.6-11.2,11.5-10.6,7.7.6,10.5-2.5,10-9.4-.4-5.3,1.7-9.4,8.3-9,8.5.6,9.8-4.1,8.9-10.2-1.5-9.8,3.8-12.3,12.9-11.3a36.17,36.17,0,0,0,8.7,0c10.8-1.5,15.5,2.3,13.8,12.8-.8,5.1.5,9.6,7.7,8.8,7.9-.9,10.5,2.9,9.6,9.6-1,7.6,3.4,9.7,10.4,8.8,8.3-1,11.1,2.6,10.8,9.9-.2,3.6-1.1,8.4,5.4,8.4s5.3-5,5.3-8.5c.2-13.6.4-27.2.1-40.7-.1-6.3,1.7-9.1,9-9.1q72,.3,144,0c6.4,0,8.8,2.4,8.7,8.3-.2,13.6.2,27.2-.1,40.7-.1,6.9,2.3,9.8,10,9.6,6.6-.2,11.6-.7,10.7-8.7-.9-7.3,2.1-11,10.5-10,7.8,1,11.7-2.3,10.8-9.9-.7-5.8,1.7-9,8.3-8.4,7.2.7,10.1-2.8,9.1-9-1.7-10.4,3-14.2,13.8-12.7a36.24,36.24,0,0,0,8.7-.1c8.9-.9,14.4,1.3,12.8,11.2-1.1,6.8,1.3,11.4,10,10.6,6.2-.6,7.9,3,7.3,8.1-1.1,8.5,3.5,11.2,11.7,10.2,8-.9,10,3,9.8,9.6-.1,3.6-1.3,8.6,5.1,8.7s5.3-4.9,5.3-8.5c.2-13.6.2-27.2,0-40.7-.1-6.2,1.9-9,9.2-8.9,48,.2,96,.1,144,0,6.4,0,8.8,2.3,8.7,8.2-.3,13.6.1,27.2-.2,40.7-.2,6.6,1.6,9.9,9.7,9.8,7.6-.1,12.1-1.7,11.1-9.6-1-7.2,2.5-10.1,9.9-9.2,8.6,1.1,12.3-2.3,11.4-10.5-.6-5,1.3-8.6,7.5-7.8,9.1,1.1,10.7-4,9.8-10.6-1.2-8.7,2.5-12.2,11.8-11.2a52.42,52.42,0,0,0,11.2,0c9.9-1.2,13.7,2.7,12.3,11.8-.9,6.3,1.1,10.8,9.3,10,6.9-.7,8.5,3.2,8,8.6-.6,6.7,1.9,10.6,9.7,9.7,8.3-1,12.5,1.8,11.7,10.3-.3,3.6-.7,8.5,5.8,8,5.6-.4,4.6-4.7,4.6-8,.1-14,.2-27.9-.1-41.9-.1-5.8,2-8.4,8.6-8.3q72,.3,144,0c7.1,0,9.5,2.6,9.4,8.9-.2,13.6.1,27.2-.2,40.7-.1,7,2.6,11,10.6,11.3,8.6.3,10.9-4.4,10-11.1-1.1-7.7,1.9-10.9,10.2-9.9,7.3.8,12.2-.9,11.1-9.3-.8-6,1.4-9.8,8.8-9.1,6.5.7,9.5-2.5,8.5-8.2-2.1-12.1,4.3-14.9,15.4-13.5a59.87,59.87,0,0,0,11.2.1c7.4-.6,9.4,2.3,8,9-1.4,6.9-.6,13.4,9.8,12.6,6.7-.5,8.8,2.8,8.3,8.5-.6,6.2,2.8,8.6,8.9,7.7,10.4-1.4,13.1,3.6,12.5,12.2-.3,3.7-1,8.6,5.5,8.3s4.9-5.3,4.9-8.8c.2-13.2.4-26.4,0-39.6-.3-7.6,2.6-10,10.7-9.9q70.8.45,141.5,0c7.7,0,10.1,2.7,9.9,9.6-.4,13.2.1,26.4-.2,39.6-.2,6.5,1.3,10.1,9.5,9.7,6.9-.3,11.5-1.6,10.3-9.1-1.3-7.9,2.5-10.7,10.4-9.7,9.4,1.3,12.8-2.7,11.8-11.2-.6-4.7,1.5-7.7,7-7.1,9.7,1.1,11.3-4.1,10.3-11.3-1.1-8.2,2.7-11.4,11.3-10.4a52.42,52.42,0,0,0,11.2,0c9.2-1,14.3,1.6,12.9,11.3-.8,5.9-.1,10.9,8.7,10.3,6.4-.5,8.8,3.3,8.5,8.9-.3,6.6,2.2,10.1,10,9.6,7.2-.4,11.8,2.4,11.4,10.2-.2,3.6-1,8.6,5.7,8,6.3-.6,4.7-5.5,4.7-9.1.2-13.2-.1-26.4.2-39.6.1-3.4-1.9-8.8,4.5-9,6.7-.2,4.6,5.5,4.7,8.8.2,27-.1,53.9.2,80.8.1,6.3-2.6,8-8.8,7.9-48-.1-96-.2-144,.1-8,0-9.7-3.1-9.5-9.8.3-13.2-.2-26.4-.1-39.6,0-4.1.4-8.4-5.6-8.1-4.7.2-5.7,3.7-5.1,7.6,1.1,7.5-2,11-10.3,10s-11.3,2.4-10.3,10c.7,4.9-1.1,8.6-7.3,8.1-8.6-.8-11.2,3.4-10.1,10.4,1.5,9.8-3.6,12.4-12.8,11.4a36.17,36.17,0,0,0-8.7,0c-11.1,1.5-15.2-2.2-14.7-13.3.5-11.8-23.7-8.2-19.1-24.3.4-1.3-3.8-2.4-6.4-2.4a4.82,4.82,0,0,0-1.2,0c-8.8,1.2-12-2.7-11.1-10.6,1-8.4-5.1-7.8-11.2-8.1-6.9-.3-9.6,2.1-9.5,8.7.3,13.2-.3,26.4.3,39.6.4,8.3-3,10.6-11.5,10.5-23.2-.4-46.3-.1-69.5-.1C1476,119.6,1453.3,119.2,1430.6,119.8Z" />
+              </svg>
+            </div>
+            <img src="./images/icon/layanan keanggotaan.png" class="h-24 mt-12" alt="" />
+            <h3 class="mt-4 text-green-main font-bold text-2xl">Layanan Keanggotaan</h3>
+            <p class="text-green-main group-hover:text-white my-4">
+              Menu ini menyatukan seluruh pihak yang terkait dengan pertanian secara luas untuk kemudahan dan keamanan
+              arus transaksi mulai dari hulu ke hilir.
+            </p>
+          </div>
+          <div class="group max-w-[258px] relative hover:bg-orange-main px-4 pb-5 pt-4 mx-auto">
+            <div class="bg-yellow-main text-yellow-main">
+              <!-- <img
+                  src="./images/2_aset pattern2.svg"
+                  class="absolute opacity-50"
+                  alt=""
+                /> -->
+              <svg class="absolute fill-green-main/50 group-hover:fill-yellow-main-light/50" viewBox="0 0 1920 141.4"
+                preserveAspectRatio="none">
+                <path
+                  d="M1430.6,119.8c-9.8.2-14.3-1.8-13.4-12.1,1-12.3.3-24.8.1-37.2-.1-3.4,1.7-8.6-4.7-9s-6,4.4-5.7,8.2c.6,7.3-2.1,11.1-10.5,10.1-7-.8-11.3,1.4-10.3,8.9.9,7-2.5,10-9.9,9.4-6.4-.6-8.1,3.3-7.3,8.1,2,11.8-4,15.1-15.4,13.6a42,42,0,0,0-8.7-.2c-9.2.8-13.5-2.5-12.1-11.6,1-6.3-.9-10.7-9.1-9.9-6.8.7-8.9-3.1-8.2-8.6,1-8-3.1-10.6-10.8-9.7s-10.7-2.3-9.8-9.3c1.2-9.4-5.4-9.2-12.6-9.5-8.6-.3-10.4,3.5-10.1,10.6.4,13.4-.5,26.8.5,40.2.5,6.4-1,8.1-7.5,8.1-48-.1-96-.2-144,0-7,0-9.5-2.3-9.4-8.7.3-13.2.2-26.4-.1-39.6-.1-3.7,2.5-9.5-4.9-9.8-7.6-.3-5.5,5.5-5.4,9.3.1,9.1-4.9,11.1-13.6,14.3s-13.2,14.4-24.1,16.8c-.6.1-.7,3.7-.4,5.5,1.5,9.8-3,13.5-13.2,12.2a46.63,46.63,0,0,0-11.2,0c-8.1.8-12.8-1.4-11.7-10,.9-7.2-1.2-12.3-10.6-11.8-6.7.4-7.1-4.3-6.8-8.7.5-6.8-1.9-10.4-9.7-9.4s-12-1.5-10.9-9.5c1.1-8.3-4.3-9.2-11.5-9.3-8.4-.1-9.3,4.2-9.2,10.4.2,12.8-.3,25.6.1,38.4.2,7.3-2,10.2-10.5,10.2q-70.8-.45-141.5-.1c-8.4.1-10.7-2.9-10.5-10.3.4-12.8.3-25.6,0-38.4-.1-3.7,2.3-9.5-5.2-9.6-6.4,0-5.3,5-5.2,8.6.4,6.7-1.9,10.4-9.8,9.6s-11.5,2.8-11,10.3c.3,5.1-1.6,8.5-7.7,7.9-9-.9-10.6,4-9.7,10.6,1.4,9.8-3.8,12.3-13,11.2a30.53,30.53,0,0,0-7.4,0c-11.2,1.5-17.6-1.5-15.6-13.5.8-4.7-.8-8.7-7.3-8.1-8.6.9-10.9-3.3-10.1-10.4.7-6.1-2.6-8.8-8.8-8-10.5,1.4-12.8-3.6-11.9-12.1.8-7.4-4.1-8.8-11-8.9s-9.6,2.5-9.5,8.9c.2,14.4-.2,28.7.1,43.1.1,6.3-2.1,9-9.3,9q-72-.3-144,0c-7.1,0-9.4-2.4-9.2-8.9.3-13.6.2-27.2,0-40.7-.1-3.5,1.4-8.6-5.2-8.6-6.3.1-5.5,5.1-5.2,8.6.5,6.9-2,10.3-9.7,9.4-8.5-.9-13.7,1.5-13.1,10.7a4.92,4.92,0,0,1-5.3,5.4c-11.5-1.1-12.4,5.2-12,13.5.4,7.9-5.2,11.5-12.9,10.2-6.9-1.2-18.7,6.3-19.1-8.6-.2-6.6-4.1-11.8-11.7-12.4-6.8-.6-8.2-4.1-7.6-9.4.6-6.1-1.3-10.1-8.8-9.2-9.1,1.1-12.9-2.2-12.1-11,.8-7.8-4.8-9.5-11.9-9.9-9.2-.5-8.5,5.3-8.6,10.7-.1,14-.3,27.9-.1,41.9,0,5.8-2.1,8.3-8.7,8.2q-72-.3-144,0c-6.9,0-9.6-2.2-9.5-8.8.3-13.6.2-27.2,0-40.7-.1-3.5,1.5-8.5-5.1-8.7s-5.7,4.8-5.3,8.3c.7,7.5-2.2,11.1-10.5,9.9s-11.4,2.1-10.5,9.8c.7,5.7-2,9-8.5,8.5-8.3-.7-10,3.8-9.1,10.1,1.3,9.2-3.1,12.8-12.7,11.6a30.53,30.53,0,0,0-7.4,0c-11.2,1.5-17.5-1.4-15.6-13.4.7-4.6-.6-8.8-7.2-8.2-8.5.8-10.9-3.4-10.2-10.5.8-7.7-3.6-10.6-11.2-9.9-6.8.6-10-1.7-9.4-8.5.6-6.2-1.3-10.9-9.5-10.1-7.1.6-9.7-3.5-10-9.1a164.88,164.88,0,0,1,.1-18.6c.4-6.8,4-10,11.9-9.9q64.5.45,129.1,0c8.3-.1,10.7,2.8,10.4,10.2-.5,12.4.2,24.8-.1,37.2-.2,7.2,1,11.5,10.6,11.6,8.9,0,10.8-3.7,10-10.6-1-8,2.6-11.6,11.2-10.5,7.7,1,10.4-2.6,10-9.3-.2-4,1.3-7.2,6.2-6.7,9.9,1,12.2-3.9,11.2-11.8-.9-7.4,2.2-10.9,10.5-9.9a41,41,0,0,0,9.9-.1c11.1-1.3,16.7,2.4,14.9,13.5-.9,5.9,2,8.9,8.4,8.2,7.4-.8,9.6,2.8,8.9,8.9-.8,6.9,2,10.2,9.8,9.4s11.4,2.9,11.1,10.3c-.1,3.8-.4,8.4,6,7.9s5-5.3,5-8.9c.2-12.8.6-25.6-.1-38.4-.5-8.9,3.1-11.2,12.1-11.1,42.6.4,85.3.2,127.9.1,4.6,0,8.9,1.5,13.3,2.1,7,.9,8.8,4.5,8.7,10.4-.2,12.4.3,24.8-.2,37.2-.3,7.7,3.9,9,10.6,8.9,6.1,0,11-.7,9.9-8-1.3-8.5,3.6-11.2,11.5-10.6,7.7.6,10.5-2.5,10-9.4-.4-5.3,1.7-9.4,8.3-9,8.5.6,9.8-4.1,8.9-10.2-1.5-9.8,3.8-12.3,12.9-11.3a36.17,36.17,0,0,0,8.7,0c10.8-1.5,15.5,2.3,13.8,12.8-.8,5.1.5,9.6,7.7,8.8,7.9-.9,10.5,2.9,9.6,9.6-1,7.6,3.4,9.7,10.4,8.8,8.3-1,11.1,2.6,10.8,9.9-.2,3.6-1.1,8.4,5.4,8.4s5.3-5,5.3-8.5c.2-13.6.4-27.2.1-40.7-.1-6.3,1.7-9.1,9-9.1q72,.3,144,0c6.4,0,8.8,2.4,8.7,8.3-.2,13.6.2,27.2-.1,40.7-.1,6.9,2.3,9.8,10,9.6,6.6-.2,11.6-.7,10.7-8.7-.9-7.3,2.1-11,10.5-10,7.8,1,11.7-2.3,10.8-9.9-.7-5.8,1.7-9,8.3-8.4,7.2.7,10.1-2.8,9.1-9-1.7-10.4,3-14.2,13.8-12.7a36.24,36.24,0,0,0,8.7-.1c8.9-.9,14.4,1.3,12.8,11.2-1.1,6.8,1.3,11.4,10,10.6,6.2-.6,7.9,3,7.3,8.1-1.1,8.5,3.5,11.2,11.7,10.2,8-.9,10,3,9.8,9.6-.1,3.6-1.3,8.6,5.1,8.7s5.3-4.9,5.3-8.5c.2-13.6.2-27.2,0-40.7-.1-6.2,1.9-9,9.2-8.9,48,.2,96,.1,144,0,6.4,0,8.8,2.3,8.7,8.2-.3,13.6.1,27.2-.2,40.7-.2,6.6,1.6,9.9,9.7,9.8,7.6-.1,12.1-1.7,11.1-9.6-1-7.2,2.5-10.1,9.9-9.2,8.6,1.1,12.3-2.3,11.4-10.5-.6-5,1.3-8.6,7.5-7.8,9.1,1.1,10.7-4,9.8-10.6-1.2-8.7,2.5-12.2,11.8-11.2a52.42,52.42,0,0,0,11.2,0c9.9-1.2,13.7,2.7,12.3,11.8-.9,6.3,1.1,10.8,9.3,10,6.9-.7,8.5,3.2,8,8.6-.6,6.7,1.9,10.6,9.7,9.7,8.3-1,12.5,1.8,11.7,10.3-.3,3.6-.7,8.5,5.8,8,5.6-.4,4.6-4.7,4.6-8,.1-14,.2-27.9-.1-41.9-.1-5.8,2-8.4,8.6-8.3q72,.3,144,0c7.1,0,9.5,2.6,9.4,8.9-.2,13.6.1,27.2-.2,40.7-.1,7,2.6,11,10.6,11.3,8.6.3,10.9-4.4,10-11.1-1.1-7.7,1.9-10.9,10.2-9.9,7.3.8,12.2-.9,11.1-9.3-.8-6,1.4-9.8,8.8-9.1,6.5.7,9.5-2.5,8.5-8.2-2.1-12.1,4.3-14.9,15.4-13.5a59.87,59.87,0,0,0,11.2.1c7.4-.6,9.4,2.3,8,9-1.4,6.9-.6,13.4,9.8,12.6,6.7-.5,8.8,2.8,8.3,8.5-.6,6.2,2.8,8.6,8.9,7.7,10.4-1.4,13.1,3.6,12.5,12.2-.3,3.7-1,8.6,5.5,8.3s4.9-5.3,4.9-8.8c.2-13.2.4-26.4,0-39.6-.3-7.6,2.6-10,10.7-9.9q70.8.45,141.5,0c7.7,0,10.1,2.7,9.9,9.6-.4,13.2.1,26.4-.2,39.6-.2,6.5,1.3,10.1,9.5,9.7,6.9-.3,11.5-1.6,10.3-9.1-1.3-7.9,2.5-10.7,10.4-9.7,9.4,1.3,12.8-2.7,11.8-11.2-.6-4.7,1.5-7.7,7-7.1,9.7,1.1,11.3-4.1,10.3-11.3-1.1-8.2,2.7-11.4,11.3-10.4a52.42,52.42,0,0,0,11.2,0c9.2-1,14.3,1.6,12.9,11.3-.8,5.9-.1,10.9,8.7,10.3,6.4-.5,8.8,3.3,8.5,8.9-.3,6.6,2.2,10.1,10,9.6,7.2-.4,11.8,2.4,11.4,10.2-.2,3.6-1,8.6,5.7,8,6.3-.6,4.7-5.5,4.7-9.1.2-13.2-.1-26.4.2-39.6.1-3.4-1.9-8.8,4.5-9,6.7-.2,4.6,5.5,4.7,8.8.2,27-.1,53.9.2,80.8.1,6.3-2.6,8-8.8,7.9-48-.1-96-.2-144,.1-8,0-9.7-3.1-9.5-9.8.3-13.2-.2-26.4-.1-39.6,0-4.1.4-8.4-5.6-8.1-4.7.2-5.7,3.7-5.1,7.6,1.1,7.5-2,11-10.3,10s-11.3,2.4-10.3,10c.7,4.9-1.1,8.6-7.3,8.1-8.6-.8-11.2,3.4-10.1,10.4,1.5,9.8-3.6,12.4-12.8,11.4a36.17,36.17,0,0,0-8.7,0c-11.1,1.5-15.2-2.2-14.7-13.3.5-11.8-23.7-8.2-19.1-24.3.4-1.3-3.8-2.4-6.4-2.4a4.82,4.82,0,0,0-1.2,0c-8.8,1.2-12-2.7-11.1-10.6,1-8.4-5.1-7.8-11.2-8.1-6.9-.3-9.6,2.1-9.5,8.7.3,13.2-.3,26.4.3,39.6.4,8.3-3,10.6-11.5,10.5-23.2-.4-46.3-.1-69.5-.1C1476,119.6,1453.3,119.2,1430.6,119.8Z" />
+              </svg>
+            </div>
+            <img src="./images/icon/layanan puner KPB.png" class="h-24 mt-12" alt="" />
+            <h3 class="mt-4text-green-main font-bold text-2xl">Layanan Puber KPB</h3>
+            <p class="text-green-main group-hover:text-white my-4">
+              Menu ini diperuntukan bagi Petani yang melakukan usaha tani subsektor tanaman pangan, perkebunan,
+              hortikultura, dan/ atau peternakan dengan lahan paling luas 2 (dua) hektare setiap musim tanam.
+            </p>
+          </div>
+          <div class="group max-w-[258px] relative hover:bg-orange-main px-4 pb-5 pt-4 mx-auto">
+            <div class="bg-yellow-main text-yellow-main">
+              <!-- <img
+                  src="./images/2_aset pattern2.svg"
+                  class="absolute opacity-50"
+                  alt=""
+                /> -->
+              <svg class="absolute fill-green-main/50 group-hover:fill-yellow-main-light/50" viewBox="0 0 1920 141.4"
+                preserveAspectRatio="none">
+                <path
+                  d="M1430.6,119.8c-9.8.2-14.3-1.8-13.4-12.1,1-12.3.3-24.8.1-37.2-.1-3.4,1.7-8.6-4.7-9s-6,4.4-5.7,8.2c.6,7.3-2.1,11.1-10.5,10.1-7-.8-11.3,1.4-10.3,8.9.9,7-2.5,10-9.9,9.4-6.4-.6-8.1,3.3-7.3,8.1,2,11.8-4,15.1-15.4,13.6a42,42,0,0,0-8.7-.2c-9.2.8-13.5-2.5-12.1-11.6,1-6.3-.9-10.7-9.1-9.9-6.8.7-8.9-3.1-8.2-8.6,1-8-3.1-10.6-10.8-9.7s-10.7-2.3-9.8-9.3c1.2-9.4-5.4-9.2-12.6-9.5-8.6-.3-10.4,3.5-10.1,10.6.4,13.4-.5,26.8.5,40.2.5,6.4-1,8.1-7.5,8.1-48-.1-96-.2-144,0-7,0-9.5-2.3-9.4-8.7.3-13.2.2-26.4-.1-39.6-.1-3.7,2.5-9.5-4.9-9.8-7.6-.3-5.5,5.5-5.4,9.3.1,9.1-4.9,11.1-13.6,14.3s-13.2,14.4-24.1,16.8c-.6.1-.7,3.7-.4,5.5,1.5,9.8-3,13.5-13.2,12.2a46.63,46.63,0,0,0-11.2,0c-8.1.8-12.8-1.4-11.7-10,.9-7.2-1.2-12.3-10.6-11.8-6.7.4-7.1-4.3-6.8-8.7.5-6.8-1.9-10.4-9.7-9.4s-12-1.5-10.9-9.5c1.1-8.3-4.3-9.2-11.5-9.3-8.4-.1-9.3,4.2-9.2,10.4.2,12.8-.3,25.6.1,38.4.2,7.3-2,10.2-10.5,10.2q-70.8-.45-141.5-.1c-8.4.1-10.7-2.9-10.5-10.3.4-12.8.3-25.6,0-38.4-.1-3.7,2.3-9.5-5.2-9.6-6.4,0-5.3,5-5.2,8.6.4,6.7-1.9,10.4-9.8,9.6s-11.5,2.8-11,10.3c.3,5.1-1.6,8.5-7.7,7.9-9-.9-10.6,4-9.7,10.6,1.4,9.8-3.8,12.3-13,11.2a30.53,30.53,0,0,0-7.4,0c-11.2,1.5-17.6-1.5-15.6-13.5.8-4.7-.8-8.7-7.3-8.1-8.6.9-10.9-3.3-10.1-10.4.7-6.1-2.6-8.8-8.8-8-10.5,1.4-12.8-3.6-11.9-12.1.8-7.4-4.1-8.8-11-8.9s-9.6,2.5-9.5,8.9c.2,14.4-.2,28.7.1,43.1.1,6.3-2.1,9-9.3,9q-72-.3-144,0c-7.1,0-9.4-2.4-9.2-8.9.3-13.6.2-27.2,0-40.7-.1-3.5,1.4-8.6-5.2-8.6-6.3.1-5.5,5.1-5.2,8.6.5,6.9-2,10.3-9.7,9.4-8.5-.9-13.7,1.5-13.1,10.7a4.92,4.92,0,0,1-5.3,5.4c-11.5-1.1-12.4,5.2-12,13.5.4,7.9-5.2,11.5-12.9,10.2-6.9-1.2-18.7,6.3-19.1-8.6-.2-6.6-4.1-11.8-11.7-12.4-6.8-.6-8.2-4.1-7.6-9.4.6-6.1-1.3-10.1-8.8-9.2-9.1,1.1-12.9-2.2-12.1-11,.8-7.8-4.8-9.5-11.9-9.9-9.2-.5-8.5,5.3-8.6,10.7-.1,14-.3,27.9-.1,41.9,0,5.8-2.1,8.3-8.7,8.2q-72-.3-144,0c-6.9,0-9.6-2.2-9.5-8.8.3-13.6.2-27.2,0-40.7-.1-3.5,1.5-8.5-5.1-8.7s-5.7,4.8-5.3,8.3c.7,7.5-2.2,11.1-10.5,9.9s-11.4,2.1-10.5,9.8c.7,5.7-2,9-8.5,8.5-8.3-.7-10,3.8-9.1,10.1,1.3,9.2-3.1,12.8-12.7,11.6a30.53,30.53,0,0,0-7.4,0c-11.2,1.5-17.5-1.4-15.6-13.4.7-4.6-.6-8.8-7.2-8.2-8.5.8-10.9-3.4-10.2-10.5.8-7.7-3.6-10.6-11.2-9.9-6.8.6-10-1.7-9.4-8.5.6-6.2-1.3-10.9-9.5-10.1-7.1.6-9.7-3.5-10-9.1a164.88,164.88,0,0,1,.1-18.6c.4-6.8,4-10,11.9-9.9q64.5.45,129.1,0c8.3-.1,10.7,2.8,10.4,10.2-.5,12.4.2,24.8-.1,37.2-.2,7.2,1,11.5,10.6,11.6,8.9,0,10.8-3.7,10-10.6-1-8,2.6-11.6,11.2-10.5,7.7,1,10.4-2.6,10-9.3-.2-4,1.3-7.2,6.2-6.7,9.9,1,12.2-3.9,11.2-11.8-.9-7.4,2.2-10.9,10.5-9.9a41,41,0,0,0,9.9-.1c11.1-1.3,16.7,2.4,14.9,13.5-.9,5.9,2,8.9,8.4,8.2,7.4-.8,9.6,2.8,8.9,8.9-.8,6.9,2,10.2,9.8,9.4s11.4,2.9,11.1,10.3c-.1,3.8-.4,8.4,6,7.9s5-5.3,5-8.9c.2-12.8.6-25.6-.1-38.4-.5-8.9,3.1-11.2,12.1-11.1,42.6.4,85.3.2,127.9.1,4.6,0,8.9,1.5,13.3,2.1,7,.9,8.8,4.5,8.7,10.4-.2,12.4.3,24.8-.2,37.2-.3,7.7,3.9,9,10.6,8.9,6.1,0,11-.7,9.9-8-1.3-8.5,3.6-11.2,11.5-10.6,7.7.6,10.5-2.5,10-9.4-.4-5.3,1.7-9.4,8.3-9,8.5.6,9.8-4.1,8.9-10.2-1.5-9.8,3.8-12.3,12.9-11.3a36.17,36.17,0,0,0,8.7,0c10.8-1.5,15.5,2.3,13.8,12.8-.8,5.1.5,9.6,7.7,8.8,7.9-.9,10.5,2.9,9.6,9.6-1,7.6,3.4,9.7,10.4,8.8,8.3-1,11.1,2.6,10.8,9.9-.2,3.6-1.1,8.4,5.4,8.4s5.3-5,5.3-8.5c.2-13.6.4-27.2.1-40.7-.1-6.3,1.7-9.1,9-9.1q72,.3,144,0c6.4,0,8.8,2.4,8.7,8.3-.2,13.6.2,27.2-.1,40.7-.1,6.9,2.3,9.8,10,9.6,6.6-.2,11.6-.7,10.7-8.7-.9-7.3,2.1-11,10.5-10,7.8,1,11.7-2.3,10.8-9.9-.7-5.8,1.7-9,8.3-8.4,7.2.7,10.1-2.8,9.1-9-1.7-10.4,3-14.2,13.8-12.7a36.24,36.24,0,0,0,8.7-.1c8.9-.9,14.4,1.3,12.8,11.2-1.1,6.8,1.3,11.4,10,10.6,6.2-.6,7.9,3,7.3,8.1-1.1,8.5,3.5,11.2,11.7,10.2,8-.9,10,3,9.8,9.6-.1,3.6-1.3,8.6,5.1,8.7s5.3-4.9,5.3-8.5c.2-13.6.2-27.2,0-40.7-.1-6.2,1.9-9,9.2-8.9,48,.2,96,.1,144,0,6.4,0,8.8,2.3,8.7,8.2-.3,13.6.1,27.2-.2,40.7-.2,6.6,1.6,9.9,9.7,9.8,7.6-.1,12.1-1.7,11.1-9.6-1-7.2,2.5-10.1,9.9-9.2,8.6,1.1,12.3-2.3,11.4-10.5-.6-5,1.3-8.6,7.5-7.8,9.1,1.1,10.7-4,9.8-10.6-1.2-8.7,2.5-12.2,11.8-11.2a52.42,52.42,0,0,0,11.2,0c9.9-1.2,13.7,2.7,12.3,11.8-.9,6.3,1.1,10.8,9.3,10,6.9-.7,8.5,3.2,8,8.6-.6,6.7,1.9,10.6,9.7,9.7,8.3-1,12.5,1.8,11.7,10.3-.3,3.6-.7,8.5,5.8,8,5.6-.4,4.6-4.7,4.6-8,.1-14,.2-27.9-.1-41.9-.1-5.8,2-8.4,8.6-8.3q72,.3,144,0c7.1,0,9.5,2.6,9.4,8.9-.2,13.6.1,27.2-.2,40.7-.1,7,2.6,11,10.6,11.3,8.6.3,10.9-4.4,10-11.1-1.1-7.7,1.9-10.9,10.2-9.9,7.3.8,12.2-.9,11.1-9.3-.8-6,1.4-9.8,8.8-9.1,6.5.7,9.5-2.5,8.5-8.2-2.1-12.1,4.3-14.9,15.4-13.5a59.87,59.87,0,0,0,11.2.1c7.4-.6,9.4,2.3,8,9-1.4,6.9-.6,13.4,9.8,12.6,6.7-.5,8.8,2.8,8.3,8.5-.6,6.2,2.8,8.6,8.9,7.7,10.4-1.4,13.1,3.6,12.5,12.2-.3,3.7-1,8.6,5.5,8.3s4.9-5.3,4.9-8.8c.2-13.2.4-26.4,0-39.6-.3-7.6,2.6-10,10.7-9.9q70.8.45,141.5,0c7.7,0,10.1,2.7,9.9,9.6-.4,13.2.1,26.4-.2,39.6-.2,6.5,1.3,10.1,9.5,9.7,6.9-.3,11.5-1.6,10.3-9.1-1.3-7.9,2.5-10.7,10.4-9.7,9.4,1.3,12.8-2.7,11.8-11.2-.6-4.7,1.5-7.7,7-7.1,9.7,1.1,11.3-4.1,10.3-11.3-1.1-8.2,2.7-11.4,11.3-10.4a52.42,52.42,0,0,0,11.2,0c9.2-1,14.3,1.6,12.9,11.3-.8,5.9-.1,10.9,8.7,10.3,6.4-.5,8.8,3.3,8.5,8.9-.3,6.6,2.2,10.1,10,9.6,7.2-.4,11.8,2.4,11.4,10.2-.2,3.6-1,8.6,5.7,8,6.3-.6,4.7-5.5,4.7-9.1.2-13.2-.1-26.4.2-39.6.1-3.4-1.9-8.8,4.5-9,6.7-.2,4.6,5.5,4.7,8.8.2,27-.1,53.9.2,80.8.1,6.3-2.6,8-8.8,7.9-48-.1-96-.2-144,.1-8,0-9.7-3.1-9.5-9.8.3-13.2-.2-26.4-.1-39.6,0-4.1.4-8.4-5.6-8.1-4.7.2-5.7,3.7-5.1,7.6,1.1,7.5-2,11-10.3,10s-11.3,2.4-10.3,10c.7,4.9-1.1,8.6-7.3,8.1-8.6-.8-11.2,3.4-10.1,10.4,1.5,9.8-3.6,12.4-12.8,11.4a36.17,36.17,0,0,0-8.7,0c-11.1,1.5-15.2-2.2-14.7-13.3.5-11.8-23.7-8.2-19.1-24.3.4-1.3-3.8-2.4-6.4-2.4a4.82,4.82,0,0,0-1.2,0c-8.8,1.2-12-2.7-11.1-10.6,1-8.4-5.1-7.8-11.2-8.1-6.9-.3-9.6,2.1-9.5,8.7.3,13.2-.3,26.4.3,39.6.4,8.3-3,10.6-11.5,10.5-23.2-.4-46.3-.1-69.5-.1C1476,119.6,1453.3,119.2,1430.6,119.8Z" />
+              </svg>
+            </div>
+            <img src="./images/icon/layanan modal.png" class="h-24 mt-12" alt="" />
+            <h3 class="mt-4 text-green-main font-bold text-2xl">Layanan Modal</h3>
+            <p class="text-green-main group-hover:text-white my-4">
+              Menu ini diperuntukan bagi Petani yang melakukan usaha tani subsektor tanaman pangan, perkebunan,
+              hortikultura, dan/ atau peternakan dengan lahan paling luas 2 (dua) hektare setiap musim tanam.
+            </p>
+          </div>
+        </div>
+
+
+        
+        <div class="card-container hidden md:flex flex-col md:flex-row gap-5 px-10 mt-10 lg:px-28">
+          <div class="group max-w-[258px] relative hover:bg-orange-main px-4 pb-5 pt-4 mx-auto">
+            <div class="bg-yellow-main text-yellow-main">
+              <!-- <img
+                  src="./images/2_aset pattern2.svg"
+                  class="absolute opacity-50"
+                  alt=""
+                /> -->
+              <svg class="absolute fill-green-main/50 group-hover:fill-yellow-main-light/50" viewBox="0 0 1920 141.4"
+                preserveAspectRatio="none">
+                <path
+                  d="M1430.6,119.8c-9.8.2-14.3-1.8-13.4-12.1,1-12.3.3-24.8.1-37.2-.1-3.4,1.7-8.6-4.7-9s-6,4.4-5.7,8.2c.6,7.3-2.1,11.1-10.5,10.1-7-.8-11.3,1.4-10.3,8.9.9,7-2.5,10-9.9,9.4-6.4-.6-8.1,3.3-7.3,8.1,2,11.8-4,15.1-15.4,13.6a42,42,0,0,0-8.7-.2c-9.2.8-13.5-2.5-12.1-11.6,1-6.3-.9-10.7-9.1-9.9-6.8.7-8.9-3.1-8.2-8.6,1-8-3.1-10.6-10.8-9.7s-10.7-2.3-9.8-9.3c1.2-9.4-5.4-9.2-12.6-9.5-8.6-.3-10.4,3.5-10.1,10.6.4,13.4-.5,26.8.5,40.2.5,6.4-1,8.1-7.5,8.1-48-.1-96-.2-144,0-7,0-9.5-2.3-9.4-8.7.3-13.2.2-26.4-.1-39.6-.1-3.7,2.5-9.5-4.9-9.8-7.6-.3-5.5,5.5-5.4,9.3.1,9.1-4.9,11.1-13.6,14.3s-13.2,14.4-24.1,16.8c-.6.1-.7,3.7-.4,5.5,1.5,9.8-3,13.5-13.2,12.2a46.63,46.63,0,0,0-11.2,0c-8.1.8-12.8-1.4-11.7-10,.9-7.2-1.2-12.3-10.6-11.8-6.7.4-7.1-4.3-6.8-8.7.5-6.8-1.9-10.4-9.7-9.4s-12-1.5-10.9-9.5c1.1-8.3-4.3-9.2-11.5-9.3-8.4-.1-9.3,4.2-9.2,10.4.2,12.8-.3,25.6.1,38.4.2,7.3-2,10.2-10.5,10.2q-70.8-.45-141.5-.1c-8.4.1-10.7-2.9-10.5-10.3.4-12.8.3-25.6,0-38.4-.1-3.7,2.3-9.5-5.2-9.6-6.4,0-5.3,5-5.2,8.6.4,6.7-1.9,10.4-9.8,9.6s-11.5,2.8-11,10.3c.3,5.1-1.6,8.5-7.7,7.9-9-.9-10.6,4-9.7,10.6,1.4,9.8-3.8,12.3-13,11.2a30.53,30.53,0,0,0-7.4,0c-11.2,1.5-17.6-1.5-15.6-13.5.8-4.7-.8-8.7-7.3-8.1-8.6.9-10.9-3.3-10.1-10.4.7-6.1-2.6-8.8-8.8-8-10.5,1.4-12.8-3.6-11.9-12.1.8-7.4-4.1-8.8-11-8.9s-9.6,2.5-9.5,8.9c.2,14.4-.2,28.7.1,43.1.1,6.3-2.1,9-9.3,9q-72-.3-144,0c-7.1,0-9.4-2.4-9.2-8.9.3-13.6.2-27.2,0-40.7-.1-3.5,1.4-8.6-5.2-8.6-6.3.1-5.5,5.1-5.2,8.6.5,6.9-2,10.3-9.7,9.4-8.5-.9-13.7,1.5-13.1,10.7a4.92,4.92,0,0,1-5.3,5.4c-11.5-1.1-12.4,5.2-12,13.5.4,7.9-5.2,11.5-12.9,10.2-6.9-1.2-18.7,6.3-19.1-8.6-.2-6.6-4.1-11.8-11.7-12.4-6.8-.6-8.2-4.1-7.6-9.4.6-6.1-1.3-10.1-8.8-9.2-9.1,1.1-12.9-2.2-12.1-11,.8-7.8-4.8-9.5-11.9-9.9-9.2-.5-8.5,5.3-8.6,10.7-.1,14-.3,27.9-.1,41.9,0,5.8-2.1,8.3-8.7,8.2q-72-.3-144,0c-6.9,0-9.6-2.2-9.5-8.8.3-13.6.2-27.2,0-40.7-.1-3.5,1.5-8.5-5.1-8.7s-5.7,4.8-5.3,8.3c.7,7.5-2.2,11.1-10.5,9.9s-11.4,2.1-10.5,9.8c.7,5.7-2,9-8.5,8.5-8.3-.7-10,3.8-9.1,10.1,1.3,9.2-3.1,12.8-12.7,11.6a30.53,30.53,0,0,0-7.4,0c-11.2,1.5-17.5-1.4-15.6-13.4.7-4.6-.6-8.8-7.2-8.2-8.5.8-10.9-3.4-10.2-10.5.8-7.7-3.6-10.6-11.2-9.9-6.8.6-10-1.7-9.4-8.5.6-6.2-1.3-10.9-9.5-10.1-7.1.6-9.7-3.5-10-9.1a164.88,164.88,0,0,1,.1-18.6c.4-6.8,4-10,11.9-9.9q64.5.45,129.1,0c8.3-.1,10.7,2.8,10.4,10.2-.5,12.4.2,24.8-.1,37.2-.2,7.2,1,11.5,10.6,11.6,8.9,0,10.8-3.7,10-10.6-1-8,2.6-11.6,11.2-10.5,7.7,1,10.4-2.6,10-9.3-.2-4,1.3-7.2,6.2-6.7,9.9,1,12.2-3.9,11.2-11.8-.9-7.4,2.2-10.9,10.5-9.9a41,41,0,0,0,9.9-.1c11.1-1.3,16.7,2.4,14.9,13.5-.9,5.9,2,8.9,8.4,8.2,7.4-.8,9.6,2.8,8.9,8.9-.8,6.9,2,10.2,9.8,9.4s11.4,2.9,11.1,10.3c-.1,3.8-.4,8.4,6,7.9s5-5.3,5-8.9c.2-12.8.6-25.6-.1-38.4-.5-8.9,3.1-11.2,12.1-11.1,42.6.4,85.3.2,127.9.1,4.6,0,8.9,1.5,13.3,2.1,7,.9,8.8,4.5,8.7,10.4-.2,12.4.3,24.8-.2,37.2-.3,7.7,3.9,9,10.6,8.9,6.1,0,11-.7,9.9-8-1.3-8.5,3.6-11.2,11.5-10.6,7.7.6,10.5-2.5,10-9.4-.4-5.3,1.7-9.4,8.3-9,8.5.6,9.8-4.1,8.9-10.2-1.5-9.8,3.8-12.3,12.9-11.3a36.17,36.17,0,0,0,8.7,0c10.8-1.5,15.5,2.3,13.8,12.8-.8,5.1.5,9.6,7.7,8.8,7.9-.9,10.5,2.9,9.6,9.6-1,7.6,3.4,9.7,10.4,8.8,8.3-1,11.1,2.6,10.8,9.9-.2,3.6-1.1,8.4,5.4,8.4s5.3-5,5.3-8.5c.2-13.6.4-27.2.1-40.7-.1-6.3,1.7-9.1,9-9.1q72,.3,144,0c6.4,0,8.8,2.4,8.7,8.3-.2,13.6.2,27.2-.1,40.7-.1,6.9,2.3,9.8,10,9.6,6.6-.2,11.6-.7,10.7-8.7-.9-7.3,2.1-11,10.5-10,7.8,1,11.7-2.3,10.8-9.9-.7-5.8,1.7-9,8.3-8.4,7.2.7,10.1-2.8,9.1-9-1.7-10.4,3-14.2,13.8-12.7a36.24,36.24,0,0,0,8.7-.1c8.9-.9,14.4,1.3,12.8,11.2-1.1,6.8,1.3,11.4,10,10.6,6.2-.6,7.9,3,7.3,8.1-1.1,8.5,3.5,11.2,11.7,10.2,8-.9,10,3,9.8,9.6-.1,3.6-1.3,8.6,5.1,8.7s5.3-4.9,5.3-8.5c.2-13.6.2-27.2,0-40.7-.1-6.2,1.9-9,9.2-8.9,48,.2,96,.1,144,0,6.4,0,8.8,2.3,8.7,8.2-.3,13.6.1,27.2-.2,40.7-.2,6.6,1.6,9.9,9.7,9.8,7.6-.1,12.1-1.7,11.1-9.6-1-7.2,2.5-10.1,9.9-9.2,8.6,1.1,12.3-2.3,11.4-10.5-.6-5,1.3-8.6,7.5-7.8,9.1,1.1,10.7-4,9.8-10.6-1.2-8.7,2.5-12.2,11.8-11.2a52.42,52.42,0,0,0,11.2,0c9.9-1.2,13.7,2.7,12.3,11.8-.9,6.3,1.1,10.8,9.3,10,6.9-.7,8.5,3.2,8,8.6-.6,6.7,1.9,10.6,9.7,9.7,8.3-1,12.5,1.8,11.7,10.3-.3,3.6-.7,8.5,5.8,8,5.6-.4,4.6-4.7,4.6-8,.1-14,.2-27.9-.1-41.9-.1-5.8,2-8.4,8.6-8.3q72,.3,144,0c7.1,0,9.5,2.6,9.4,8.9-.2,13.6.1,27.2-.2,40.7-.1,7,2.6,11,10.6,11.3,8.6.3,10.9-4.4,10-11.1-1.1-7.7,1.9-10.9,10.2-9.9,7.3.8,12.2-.9,11.1-9.3-.8-6,1.4-9.8,8.8-9.1,6.5.7,9.5-2.5,8.5-8.2-2.1-12.1,4.3-14.9,15.4-13.5a59.87,59.87,0,0,0,11.2.1c7.4-.6,9.4,2.3,8,9-1.4,6.9-.6,13.4,9.8,12.6,6.7-.5,8.8,2.8,8.3,8.5-.6,6.2,2.8,8.6,8.9,7.7,10.4-1.4,13.1,3.6,12.5,12.2-.3,3.7-1,8.6,5.5,8.3s4.9-5.3,4.9-8.8c.2-13.2.4-26.4,0-39.6-.3-7.6,2.6-10,10.7-9.9q70.8.45,141.5,0c7.7,0,10.1,2.7,9.9,9.6-.4,13.2.1,26.4-.2,39.6-.2,6.5,1.3,10.1,9.5,9.7,6.9-.3,11.5-1.6,10.3-9.1-1.3-7.9,2.5-10.7,10.4-9.7,9.4,1.3,12.8-2.7,11.8-11.2-.6-4.7,1.5-7.7,7-7.1,9.7,1.1,11.3-4.1,10.3-11.3-1.1-8.2,2.7-11.4,11.3-10.4a52.42,52.42,0,0,0,11.2,0c9.2-1,14.3,1.6,12.9,11.3-.8,5.9-.1,10.9,8.7,10.3,6.4-.5,8.8,3.3,8.5,8.9-.3,6.6,2.2,10.1,10,9.6,7.2-.4,11.8,2.4,11.4,10.2-.2,3.6-1,8.6,5.7,8,6.3-.6,4.7-5.5,4.7-9.1.2-13.2-.1-26.4.2-39.6.1-3.4-1.9-8.8,4.5-9,6.7-.2,4.6,5.5,4.7,8.8.2,27-.1,53.9.2,80.8.1,6.3-2.6,8-8.8,7.9-48-.1-96-.2-144,.1-8,0-9.7-3.1-9.5-9.8.3-13.2-.2-26.4-.1-39.6,0-4.1.4-8.4-5.6-8.1-4.7.2-5.7,3.7-5.1,7.6,1.1,7.5-2,11-10.3,10s-11.3,2.4-10.3,10c.7,4.9-1.1,8.6-7.3,8.1-8.6-.8-11.2,3.4-10.1,10.4,1.5,9.8-3.6,12.4-12.8,11.4a36.17,36.17,0,0,0-8.7,0c-11.1,1.5-15.2-2.2-14.7-13.3.5-11.8-23.7-8.2-19.1-24.3.4-1.3-3.8-2.4-6.4-2.4a4.82,4.82,0,0,0-1.2,0c-8.8,1.2-12-2.7-11.1-10.6,1-8.4-5.1-7.8-11.2-8.1-6.9-.3-9.6,2.1-9.5,8.7.3,13.2-.3,26.4.3,39.6.4,8.3-3,10.6-11.5,10.5-23.2-.4-46.3-.1-69.5-.1C1476,119.6,1453.3,119.2,1430.6,119.8Z" />
+              </svg>
+            </div>
+            <img src="./images/icon/layanan bantuan.png" class="h-24 mt-12" alt="" />
+            <h3 class="mt-4 text-green-main font-bold text-2xl">Layanan Bantuan</h3>
+            <p class="text-green-main group-hover:text-white my-4">
+              Menu ini diperuntukan bagi petani yang ingin mendapatkan bantuan pembinaan, baik budidaya, teknologi
+              maupun hilirisasi.
+            </p>
+          </div>
+          <div class="group max-w-[258px] relative hover:bg-orange-main px-4 pb-5 pt-4 mx-auto">
+            <div class="bg-yellow-main text-yellow-main">
+              <!-- <img
+                  src="./images/2_aset pattern2.svg"
+                  class="absolute opacity-50"
+                  alt=""
+                /> -->
+              <svg class="absolute fill-green-main/50 group-hover:fill-yellow-main-light/50" viewBox="0 0 1920 141.4"
+                preserveAspectRatio="none">
+                <path
+                  d="M1430.6,119.8c-9.8.2-14.3-1.8-13.4-12.1,1-12.3.3-24.8.1-37.2-.1-3.4,1.7-8.6-4.7-9s-6,4.4-5.7,8.2c.6,7.3-2.1,11.1-10.5,10.1-7-.8-11.3,1.4-10.3,8.9.9,7-2.5,10-9.9,9.4-6.4-.6-8.1,3.3-7.3,8.1,2,11.8-4,15.1-15.4,13.6a42,42,0,0,0-8.7-.2c-9.2.8-13.5-2.5-12.1-11.6,1-6.3-.9-10.7-9.1-9.9-6.8.7-8.9-3.1-8.2-8.6,1-8-3.1-10.6-10.8-9.7s-10.7-2.3-9.8-9.3c1.2-9.4-5.4-9.2-12.6-9.5-8.6-.3-10.4,3.5-10.1,10.6.4,13.4-.5,26.8.5,40.2.5,6.4-1,8.1-7.5,8.1-48-.1-96-.2-144,0-7,0-9.5-2.3-9.4-8.7.3-13.2.2-26.4-.1-39.6-.1-3.7,2.5-9.5-4.9-9.8-7.6-.3-5.5,5.5-5.4,9.3.1,9.1-4.9,11.1-13.6,14.3s-13.2,14.4-24.1,16.8c-.6.1-.7,3.7-.4,5.5,1.5,9.8-3,13.5-13.2,12.2a46.63,46.63,0,0,0-11.2,0c-8.1.8-12.8-1.4-11.7-10,.9-7.2-1.2-12.3-10.6-11.8-6.7.4-7.1-4.3-6.8-8.7.5-6.8-1.9-10.4-9.7-9.4s-12-1.5-10.9-9.5c1.1-8.3-4.3-9.2-11.5-9.3-8.4-.1-9.3,4.2-9.2,10.4.2,12.8-.3,25.6.1,38.4.2,7.3-2,10.2-10.5,10.2q-70.8-.45-141.5-.1c-8.4.1-10.7-2.9-10.5-10.3.4-12.8.3-25.6,0-38.4-.1-3.7,2.3-9.5-5.2-9.6-6.4,0-5.3,5-5.2,8.6.4,6.7-1.9,10.4-9.8,9.6s-11.5,2.8-11,10.3c.3,5.1-1.6,8.5-7.7,7.9-9-.9-10.6,4-9.7,10.6,1.4,9.8-3.8,12.3-13,11.2a30.53,30.53,0,0,0-7.4,0c-11.2,1.5-17.6-1.5-15.6-13.5.8-4.7-.8-8.7-7.3-8.1-8.6.9-10.9-3.3-10.1-10.4.7-6.1-2.6-8.8-8.8-8-10.5,1.4-12.8-3.6-11.9-12.1.8-7.4-4.1-8.8-11-8.9s-9.6,2.5-9.5,8.9c.2,14.4-.2,28.7.1,43.1.1,6.3-2.1,9-9.3,9q-72-.3-144,0c-7.1,0-9.4-2.4-9.2-8.9.3-13.6.2-27.2,0-40.7-.1-3.5,1.4-8.6-5.2-8.6-6.3.1-5.5,5.1-5.2,8.6.5,6.9-2,10.3-9.7,9.4-8.5-.9-13.7,1.5-13.1,10.7a4.92,4.92,0,0,1-5.3,5.4c-11.5-1.1-12.4,5.2-12,13.5.4,7.9-5.2,11.5-12.9,10.2-6.9-1.2-18.7,6.3-19.1-8.6-.2-6.6-4.1-11.8-11.7-12.4-6.8-.6-8.2-4.1-7.6-9.4.6-6.1-1.3-10.1-8.8-9.2-9.1,1.1-12.9-2.2-12.1-11,.8-7.8-4.8-9.5-11.9-9.9-9.2-.5-8.5,5.3-8.6,10.7-.1,14-.3,27.9-.1,41.9,0,5.8-2.1,8.3-8.7,8.2q-72-.3-144,0c-6.9,0-9.6-2.2-9.5-8.8.3-13.6.2-27.2,0-40.7-.1-3.5,1.5-8.5-5.1-8.7s-5.7,4.8-5.3,8.3c.7,7.5-2.2,11.1-10.5,9.9s-11.4,2.1-10.5,9.8c.7,5.7-2,9-8.5,8.5-8.3-.7-10,3.8-9.1,10.1,1.3,9.2-3.1,12.8-12.7,11.6a30.53,30.53,0,0,0-7.4,0c-11.2,1.5-17.5-1.4-15.6-13.4.7-4.6-.6-8.8-7.2-8.2-8.5.8-10.9-3.4-10.2-10.5.8-7.7-3.6-10.6-11.2-9.9-6.8.6-10-1.7-9.4-8.5.6-6.2-1.3-10.9-9.5-10.1-7.1.6-9.7-3.5-10-9.1a164.88,164.88,0,0,1,.1-18.6c.4-6.8,4-10,11.9-9.9q64.5.45,129.1,0c8.3-.1,10.7,2.8,10.4,10.2-.5,12.4.2,24.8-.1,37.2-.2,7.2,1,11.5,10.6,11.6,8.9,0,10.8-3.7,10-10.6-1-8,2.6-11.6,11.2-10.5,7.7,1,10.4-2.6,10-9.3-.2-4,1.3-7.2,6.2-6.7,9.9,1,12.2-3.9,11.2-11.8-.9-7.4,2.2-10.9,10.5-9.9a41,41,0,0,0,9.9-.1c11.1-1.3,16.7,2.4,14.9,13.5-.9,5.9,2,8.9,8.4,8.2,7.4-.8,9.6,2.8,8.9,8.9-.8,6.9,2,10.2,9.8,9.4s11.4,2.9,11.1,10.3c-.1,3.8-.4,8.4,6,7.9s5-5.3,5-8.9c.2-12.8.6-25.6-.1-38.4-.5-8.9,3.1-11.2,12.1-11.1,42.6.4,85.3.2,127.9.1,4.6,0,8.9,1.5,13.3,2.1,7,.9,8.8,4.5,8.7,10.4-.2,12.4.3,24.8-.2,37.2-.3,7.7,3.9,9,10.6,8.9,6.1,0,11-.7,9.9-8-1.3-8.5,3.6-11.2,11.5-10.6,7.7.6,10.5-2.5,10-9.4-.4-5.3,1.7-9.4,8.3-9,8.5.6,9.8-4.1,8.9-10.2-1.5-9.8,3.8-12.3,12.9-11.3a36.17,36.17,0,0,0,8.7,0c10.8-1.5,15.5,2.3,13.8,12.8-.8,5.1.5,9.6,7.7,8.8,7.9-.9,10.5,2.9,9.6,9.6-1,7.6,3.4,9.7,10.4,8.8,8.3-1,11.1,2.6,10.8,9.9-.2,3.6-1.1,8.4,5.4,8.4s5.3-5,5.3-8.5c.2-13.6.4-27.2.1-40.7-.1-6.3,1.7-9.1,9-9.1q72,.3,144,0c6.4,0,8.8,2.4,8.7,8.3-.2,13.6.2,27.2-.1,40.7-.1,6.9,2.3,9.8,10,9.6,6.6-.2,11.6-.7,10.7-8.7-.9-7.3,2.1-11,10.5-10,7.8,1,11.7-2.3,10.8-9.9-.7-5.8,1.7-9,8.3-8.4,7.2.7,10.1-2.8,9.1-9-1.7-10.4,3-14.2,13.8-12.7a36.24,36.24,0,0,0,8.7-.1c8.9-.9,14.4,1.3,12.8,11.2-1.1,6.8,1.3,11.4,10,10.6,6.2-.6,7.9,3,7.3,8.1-1.1,8.5,3.5,11.2,11.7,10.2,8-.9,10,3,9.8,9.6-.1,3.6-1.3,8.6,5.1,8.7s5.3-4.9,5.3-8.5c.2-13.6.2-27.2,0-40.7-.1-6.2,1.9-9,9.2-8.9,48,.2,96,.1,144,0,6.4,0,8.8,2.3,8.7,8.2-.3,13.6.1,27.2-.2,40.7-.2,6.6,1.6,9.9,9.7,9.8,7.6-.1,12.1-1.7,11.1-9.6-1-7.2,2.5-10.1,9.9-9.2,8.6,1.1,12.3-2.3,11.4-10.5-.6-5,1.3-8.6,7.5-7.8,9.1,1.1,10.7-4,9.8-10.6-1.2-8.7,2.5-12.2,11.8-11.2a52.42,52.42,0,0,0,11.2,0c9.9-1.2,13.7,2.7,12.3,11.8-.9,6.3,1.1,10.8,9.3,10,6.9-.7,8.5,3.2,8,8.6-.6,6.7,1.9,10.6,9.7,9.7,8.3-1,12.5,1.8,11.7,10.3-.3,3.6-.7,8.5,5.8,8,5.6-.4,4.6-4.7,4.6-8,.1-14,.2-27.9-.1-41.9-.1-5.8,2-8.4,8.6-8.3q72,.3,144,0c7.1,0,9.5,2.6,9.4,8.9-.2,13.6.1,27.2-.2,40.7-.1,7,2.6,11,10.6,11.3,8.6.3,10.9-4.4,10-11.1-1.1-7.7,1.9-10.9,10.2-9.9,7.3.8,12.2-.9,11.1-9.3-.8-6,1.4-9.8,8.8-9.1,6.5.7,9.5-2.5,8.5-8.2-2.1-12.1,4.3-14.9,15.4-13.5a59.87,59.87,0,0,0,11.2.1c7.4-.6,9.4,2.3,8,9-1.4,6.9-.6,13.4,9.8,12.6,6.7-.5,8.8,2.8,8.3,8.5-.6,6.2,2.8,8.6,8.9,7.7,10.4-1.4,13.1,3.6,12.5,12.2-.3,3.7-1,8.6,5.5,8.3s4.9-5.3,4.9-8.8c.2-13.2.4-26.4,0-39.6-.3-7.6,2.6-10,10.7-9.9q70.8.45,141.5,0c7.7,0,10.1,2.7,9.9,9.6-.4,13.2.1,26.4-.2,39.6-.2,6.5,1.3,10.1,9.5,9.7,6.9-.3,11.5-1.6,10.3-9.1-1.3-7.9,2.5-10.7,10.4-9.7,9.4,1.3,12.8-2.7,11.8-11.2-.6-4.7,1.5-7.7,7-7.1,9.7,1.1,11.3-4.1,10.3-11.3-1.1-8.2,2.7-11.4,11.3-10.4a52.42,52.42,0,0,0,11.2,0c9.2-1,14.3,1.6,12.9,11.3-.8,5.9-.1,10.9,8.7,10.3,6.4-.5,8.8,3.3,8.5,8.9-.3,6.6,2.2,10.1,10,9.6,7.2-.4,11.8,2.4,11.4,10.2-.2,3.6-1,8.6,5.7,8,6.3-.6,4.7-5.5,4.7-9.1.2-13.2-.1-26.4.2-39.6.1-3.4-1.9-8.8,4.5-9,6.7-.2,4.6,5.5,4.7,8.8.2,27-.1,53.9.2,80.8.1,6.3-2.6,8-8.8,7.9-48-.1-96-.2-144,.1-8,0-9.7-3.1-9.5-9.8.3-13.2-.2-26.4-.1-39.6,0-4.1.4-8.4-5.6-8.1-4.7.2-5.7,3.7-5.1,7.6,1.1,7.5-2,11-10.3,10s-11.3,2.4-10.3,10c.7,4.9-1.1,8.6-7.3,8.1-8.6-.8-11.2,3.4-10.1,10.4,1.5,9.8-3.6,12.4-12.8,11.4a36.17,36.17,0,0,0-8.7,0c-11.1,1.5-15.2-2.2-14.7-13.3.5-11.8-23.7-8.2-19.1-24.3.4-1.3-3.8-2.4-6.4-2.4a4.82,4.82,0,0,0-1.2,0c-8.8,1.2-12-2.7-11.1-10.6,1-8.4-5.1-7.8-11.2-8.1-6.9-.3-9.6,2.1-9.5,8.7.3,13.2-.3,26.4.3,39.6.4,8.3-3,10.6-11.5,10.5-23.2-.4-46.3-.1-69.5-.1C1476,119.6,1453.3,119.2,1430.6,119.8Z" />
+              </svg>
+            </div>
+            <img src="./images/icon/layanan asuransi.png" class="h-24 mt-12" alt="" />
+            <h3 class="mt-4 text-green-main font-bold text-2xl">Layanan Asuransi</h3>
+            <p class="text-green-main group-hover:text-white my-4">
+              Menu ini diperuntukan bagi petani untuk mendapatkan dukungan Asuransi baik AUTP, AUTS/K, dan Asuransi BPJS
+              Ketenagakerjaan.
+            </p>
+          </div>
+          <div class="group max-w-[258px] relative hover:bg-orange-main px-4 pb-5 pt-4 mx-auto">
+            <div class="bg-yellow-main text-yellow-main">
+              <!-- <img
+                  src="./images/2_aset pattern2.svg"
+                  class="absolute opacity-50"
+                  alt=""
+                /> -->
+              <svg class="absolute fill-green-main/50 group-hover:fill-yellow-main-light/50" viewBox="0 0 1920 141.4"
+                preserveAspectRatio="none">
+                <path
+                  d="M1430.6,119.8c-9.8.2-14.3-1.8-13.4-12.1,1-12.3.3-24.8.1-37.2-.1-3.4,1.7-8.6-4.7-9s-6,4.4-5.7,8.2c.6,7.3-2.1,11.1-10.5,10.1-7-.8-11.3,1.4-10.3,8.9.9,7-2.5,10-9.9,9.4-6.4-.6-8.1,3.3-7.3,8.1,2,11.8-4,15.1-15.4,13.6a42,42,0,0,0-8.7-.2c-9.2.8-13.5-2.5-12.1-11.6,1-6.3-.9-10.7-9.1-9.9-6.8.7-8.9-3.1-8.2-8.6,1-8-3.1-10.6-10.8-9.7s-10.7-2.3-9.8-9.3c1.2-9.4-5.4-9.2-12.6-9.5-8.6-.3-10.4,3.5-10.1,10.6.4,13.4-.5,26.8.5,40.2.5,6.4-1,8.1-7.5,8.1-48-.1-96-.2-144,0-7,0-9.5-2.3-9.4-8.7.3-13.2.2-26.4-.1-39.6-.1-3.7,2.5-9.5-4.9-9.8-7.6-.3-5.5,5.5-5.4,9.3.1,9.1-4.9,11.1-13.6,14.3s-13.2,14.4-24.1,16.8c-.6.1-.7,3.7-.4,5.5,1.5,9.8-3,13.5-13.2,12.2a46.63,46.63,0,0,0-11.2,0c-8.1.8-12.8-1.4-11.7-10,.9-7.2-1.2-12.3-10.6-11.8-6.7.4-7.1-4.3-6.8-8.7.5-6.8-1.9-10.4-9.7-9.4s-12-1.5-10.9-9.5c1.1-8.3-4.3-9.2-11.5-9.3-8.4-.1-9.3,4.2-9.2,10.4.2,12.8-.3,25.6.1,38.4.2,7.3-2,10.2-10.5,10.2q-70.8-.45-141.5-.1c-8.4.1-10.7-2.9-10.5-10.3.4-12.8.3-25.6,0-38.4-.1-3.7,2.3-9.5-5.2-9.6-6.4,0-5.3,5-5.2,8.6.4,6.7-1.9,10.4-9.8,9.6s-11.5,2.8-11,10.3c.3,5.1-1.6,8.5-7.7,7.9-9-.9-10.6,4-9.7,10.6,1.4,9.8-3.8,12.3-13,11.2a30.53,30.53,0,0,0-7.4,0c-11.2,1.5-17.6-1.5-15.6-13.5.8-4.7-.8-8.7-7.3-8.1-8.6.9-10.9-3.3-10.1-10.4.7-6.1-2.6-8.8-8.8-8-10.5,1.4-12.8-3.6-11.9-12.1.8-7.4-4.1-8.8-11-8.9s-9.6,2.5-9.5,8.9c.2,14.4-.2,28.7.1,43.1.1,6.3-2.1,9-9.3,9q-72-.3-144,0c-7.1,0-9.4-2.4-9.2-8.9.3-13.6.2-27.2,0-40.7-.1-3.5,1.4-8.6-5.2-8.6-6.3.1-5.5,5.1-5.2,8.6.5,6.9-2,10.3-9.7,9.4-8.5-.9-13.7,1.5-13.1,10.7a4.92,4.92,0,0,1-5.3,5.4c-11.5-1.1-12.4,5.2-12,13.5.4,7.9-5.2,11.5-12.9,10.2-6.9-1.2-18.7,6.3-19.1-8.6-.2-6.6-4.1-11.8-11.7-12.4-6.8-.6-8.2-4.1-7.6-9.4.6-6.1-1.3-10.1-8.8-9.2-9.1,1.1-12.9-2.2-12.1-11,.8-7.8-4.8-9.5-11.9-9.9-9.2-.5-8.5,5.3-8.6,10.7-.1,14-.3,27.9-.1,41.9,0,5.8-2.1,8.3-8.7,8.2q-72-.3-144,0c-6.9,0-9.6-2.2-9.5-8.8.3-13.6.2-27.2,0-40.7-.1-3.5,1.5-8.5-5.1-8.7s-5.7,4.8-5.3,8.3c.7,7.5-2.2,11.1-10.5,9.9s-11.4,2.1-10.5,9.8c.7,5.7-2,9-8.5,8.5-8.3-.7-10,3.8-9.1,10.1,1.3,9.2-3.1,12.8-12.7,11.6a30.53,30.53,0,0,0-7.4,0c-11.2,1.5-17.5-1.4-15.6-13.4.7-4.6-.6-8.8-7.2-8.2-8.5.8-10.9-3.4-10.2-10.5.8-7.7-3.6-10.6-11.2-9.9-6.8.6-10-1.7-9.4-8.5.6-6.2-1.3-10.9-9.5-10.1-7.1.6-9.7-3.5-10-9.1a164.88,164.88,0,0,1,.1-18.6c.4-6.8,4-10,11.9-9.9q64.5.45,129.1,0c8.3-.1,10.7,2.8,10.4,10.2-.5,12.4.2,24.8-.1,37.2-.2,7.2,1,11.5,10.6,11.6,8.9,0,10.8-3.7,10-10.6-1-8,2.6-11.6,11.2-10.5,7.7,1,10.4-2.6,10-9.3-.2-4,1.3-7.2,6.2-6.7,9.9,1,12.2-3.9,11.2-11.8-.9-7.4,2.2-10.9,10.5-9.9a41,41,0,0,0,9.9-.1c11.1-1.3,16.7,2.4,14.9,13.5-.9,5.9,2,8.9,8.4,8.2,7.4-.8,9.6,2.8,8.9,8.9-.8,6.9,2,10.2,9.8,9.4s11.4,2.9,11.1,10.3c-.1,3.8-.4,8.4,6,7.9s5-5.3,5-8.9c.2-12.8.6-25.6-.1-38.4-.5-8.9,3.1-11.2,12.1-11.1,42.6.4,85.3.2,127.9.1,4.6,0,8.9,1.5,13.3,2.1,7,.9,8.8,4.5,8.7,10.4-.2,12.4.3,24.8-.2,37.2-.3,7.7,3.9,9,10.6,8.9,6.1,0,11-.7,9.9-8-1.3-8.5,3.6-11.2,11.5-10.6,7.7.6,10.5-2.5,10-9.4-.4-5.3,1.7-9.4,8.3-9,8.5.6,9.8-4.1,8.9-10.2-1.5-9.8,3.8-12.3,12.9-11.3a36.17,36.17,0,0,0,8.7,0c10.8-1.5,15.5,2.3,13.8,12.8-.8,5.1.5,9.6,7.7,8.8,7.9-.9,10.5,2.9,9.6,9.6-1,7.6,3.4,9.7,10.4,8.8,8.3-1,11.1,2.6,10.8,9.9-.2,3.6-1.1,8.4,5.4,8.4s5.3-5,5.3-8.5c.2-13.6.4-27.2.1-40.7-.1-6.3,1.7-9.1,9-9.1q72,.3,144,0c6.4,0,8.8,2.4,8.7,8.3-.2,13.6.2,27.2-.1,40.7-.1,6.9,2.3,9.8,10,9.6,6.6-.2,11.6-.7,10.7-8.7-.9-7.3,2.1-11,10.5-10,7.8,1,11.7-2.3,10.8-9.9-.7-5.8,1.7-9,8.3-8.4,7.2.7,10.1-2.8,9.1-9-1.7-10.4,3-14.2,13.8-12.7a36.24,36.24,0,0,0,8.7-.1c8.9-.9,14.4,1.3,12.8,11.2-1.1,6.8,1.3,11.4,10,10.6,6.2-.6,7.9,3,7.3,8.1-1.1,8.5,3.5,11.2,11.7,10.2,8-.9,10,3,9.8,9.6-.1,3.6-1.3,8.6,5.1,8.7s5.3-4.9,5.3-8.5c.2-13.6.2-27.2,0-40.7-.1-6.2,1.9-9,9.2-8.9,48,.2,96,.1,144,0,6.4,0,8.8,2.3,8.7,8.2-.3,13.6.1,27.2-.2,40.7-.2,6.6,1.6,9.9,9.7,9.8,7.6-.1,12.1-1.7,11.1-9.6-1-7.2,2.5-10.1,9.9-9.2,8.6,1.1,12.3-2.3,11.4-10.5-.6-5,1.3-8.6,7.5-7.8,9.1,1.1,10.7-4,9.8-10.6-1.2-8.7,2.5-12.2,11.8-11.2a52.42,52.42,0,0,0,11.2,0c9.9-1.2,13.7,2.7,12.3,11.8-.9,6.3,1.1,10.8,9.3,10,6.9-.7,8.5,3.2,8,8.6-.6,6.7,1.9,10.6,9.7,9.7,8.3-1,12.5,1.8,11.7,10.3-.3,3.6-.7,8.5,5.8,8,5.6-.4,4.6-4.7,4.6-8,.1-14,.2-27.9-.1-41.9-.1-5.8,2-8.4,8.6-8.3q72,.3,144,0c7.1,0,9.5,2.6,9.4,8.9-.2,13.6.1,27.2-.2,40.7-.1,7,2.6,11,10.6,11.3,8.6.3,10.9-4.4,10-11.1-1.1-7.7,1.9-10.9,10.2-9.9,7.3.8,12.2-.9,11.1-9.3-.8-6,1.4-9.8,8.8-9.1,6.5.7,9.5-2.5,8.5-8.2-2.1-12.1,4.3-14.9,15.4-13.5a59.87,59.87,0,0,0,11.2.1c7.4-.6,9.4,2.3,8,9-1.4,6.9-.6,13.4,9.8,12.6,6.7-.5,8.8,2.8,8.3,8.5-.6,6.2,2.8,8.6,8.9,7.7,10.4-1.4,13.1,3.6,12.5,12.2-.3,3.7-1,8.6,5.5,8.3s4.9-5.3,4.9-8.8c.2-13.2.4-26.4,0-39.6-.3-7.6,2.6-10,10.7-9.9q70.8.45,141.5,0c7.7,0,10.1,2.7,9.9,9.6-.4,13.2.1,26.4-.2,39.6-.2,6.5,1.3,10.1,9.5,9.7,6.9-.3,11.5-1.6,10.3-9.1-1.3-7.9,2.5-10.7,10.4-9.7,9.4,1.3,12.8-2.7,11.8-11.2-.6-4.7,1.5-7.7,7-7.1,9.7,1.1,11.3-4.1,10.3-11.3-1.1-8.2,2.7-11.4,11.3-10.4a52.42,52.42,0,0,0,11.2,0c9.2-1,14.3,1.6,12.9,11.3-.8,5.9-.1,10.9,8.7,10.3,6.4-.5,8.8,3.3,8.5,8.9-.3,6.6,2.2,10.1,10,9.6,7.2-.4,11.8,2.4,11.4,10.2-.2,3.6-1,8.6,5.7,8,6.3-.6,4.7-5.5,4.7-9.1.2-13.2-.1-26.4.2-39.6.1-3.4-1.9-8.8,4.5-9,6.7-.2,4.6,5.5,4.7,8.8.2,27-.1,53.9.2,80.8.1,6.3-2.6,8-8.8,7.9-48-.1-96-.2-144,.1-8,0-9.7-3.1-9.5-9.8.3-13.2-.2-26.4-.1-39.6,0-4.1.4-8.4-5.6-8.1-4.7.2-5.7,3.7-5.1,7.6,1.1,7.5-2,11-10.3,10s-11.3,2.4-10.3,10c.7,4.9-1.1,8.6-7.3,8.1-8.6-.8-11.2,3.4-10.1,10.4,1.5,9.8-3.6,12.4-12.8,11.4a36.17,36.17,0,0,0-8.7,0c-11.1,1.5-15.2-2.2-14.7-13.3.5-11.8-23.7-8.2-19.1-24.3.4-1.3-3.8-2.4-6.4-2.4a4.82,4.82,0,0,0-1.2,0c-8.8,1.2-12-2.7-11.1-10.6,1-8.4-5.1-7.8-11.2-8.1-6.9-.3-9.6,2.1-9.5,8.7.3,13.2-.3,26.4.3,39.6.4,8.3-3,10.6-11.5,10.5-23.2-.4-46.3-.1-69.5-.1C1476,119.6,1453.3,119.2,1430.6,119.8Z" />
+              </svg>
+            </div>
+            <img src="./images/icon/layanan beasiswa.png" class="h-24 mt-12" alt="" />
+            <h3 class="mt-4 text-green-main font-bold text-2xl">Layanan Beasiswa</h3>
+            <p class="text-green-main group-hover:text-white my-4">
+              Menu ini dieperuntukan bagi Petani yang ingin mengajukan Program Beasiswa Pendidikan.
+            </p>
+          </div>
+
+            
+
+
+        </div>
+        <div class="flex justify-center">
+          <a href="" class="group">
+            <h2 class="text-center my-5 text-2xl group-hover:underline ">
+              View More...
+            </h2>
+          </a>
+        </div>
+      </div>
+    </div>
+    <!-- Services End -->
+  </section>
+  <section class="px-4 my-7 md:px-[20%] lg:px-[35%] md:py-20">
+    <div class="rounded-2xl bg-yellow-main px-3 py-5">
+      <p class="font-semibold text-green-main text-center md:text-2xl">
+        DASHBOARD SISTEM KARTU PETANI BERJAYA BERBASIS ELEKTRONIK (e-KPB)
+        PROVINSI LAMPUNG
+      </p>
+    </div>
+  </section>
+  <!-- Content End -->
+  <!-- Footer -->
+  <footer>
+    <div class="bg-[url('./images/footer.svg')] h-11 w-full -mb-1"></div>
+    <div class="footer  bg-green-main ">
+      <div
+        class="flex flex-col md:flex-row items-center md:items-start md:justify-between py-9 px-8 md:px-16 max-w-hd mx-auto">
+
+        <div class="hidden md:flex">
+          <ul class="text-white font-bold text-center md:text-left text-sm md:text-xl my-5 md:my-0 leading-6">
+            <li><a href="index.html" class="hover:underline">HOME</a></li>
+            <li>
+              <a href="profile-about.html" class="hover:underline">PROFILE</a>
+            </li>
+            <li><a href="berita.html" class="hover:underline">BERITA</a></li>
+            <li>
+              <a href="gallery-foto.html" class="hover:underline">GALLERY</a>
+            </li>
+            <li><a href="kontak.html" class="hover:underline">KONTAK</a></li>
+            <li>
+              <a href="link.html" class="hover:underline">LINK APLIKASI</a>
+            </li>
+          </ul>
+        </div>
+        <div class="flex">
+          <ul class="text-white font-bold text-center md:text-left text-sm md:text-xl my-5 md:my-0">
+            <li class="mb-2">
+              <a href="berita.html" class="underline hover:text-yellow-main-light">Berita</a>
+            </li>
+            <li class="mb-2">
+              <a href="download.html" class="underline hover:text-yellow-main-light">Download</a>
+            </li>
+            <li class="mb-2">
+              <a href="agenda.html" class="underline hover:text-yellow-main-light">Agenda</a>
+            </li>
+            <li>
+              <a href="gallery-foto.html" class="hover:text-yellow-main-light">
+                <span class="underline">Album</span> Foto</a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="text-white font-bold text-xs leading-5 md:leading-8 my-5 md:my-0">
+          <p>
+            <span class="text-sm md:text-xl"> Hubungi Kami </span> <br />Alamat:
+            Jl. WR.Mongonsidi No.69 Teluk Betung<br />
+            Telepon: 0821 11211103<br />Email: e-kpb@lampungprov.go.id
+          </p>
+        </div>
+        <div class="social text-white font-bold text-center pt-7 md:pt-0 md:text-xl">
+          <p>ikuti kami:</p>
+          <div class="flex justify-center gap-2 mt-8">
+            <a href="" class="rounded-full bg-white w-10 h-10 p-3 group hover:scale-105 duration-150">
+              <img src="./images/logo-fb.svg" class="group-hover:scale-125 duration-150" alt="" />
+            </a>
+            <a href="" class="rounded-full bg-white w-10 h-10 p-3 group hover:scale-105 duration-150">
+              <img src="./images/logo-tw.svg" class="group-hover:scale-125 duration-150" alt="" />
+            </a>
+            <a href="" class="rounded-full bg-white w-10 h-10 p-3 group hover:scale-105 duration-150">
+              <img src="./images/logo-ig.svg" class="group-hover:scale-125 duration-150" alt="" />
+            </a>
+            <a href="" class="rounded-full bg-white w-10 h-10 p-3 group hover:scale-105 duration-150">
+              <img src="./images/logo-yt.svg" class="group-hover:scale-125 duration-150" alt="" />
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <!-- Footer End -->
+</body>
+<script src="https://kit.fontawesome.com/3bf8993271.js" crossorigin="anonymous"></script>
+
+</html>

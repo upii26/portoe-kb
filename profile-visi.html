@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="shortcut icon"
+      href="./images/logo-ekpb.png"
+      type="image/x-icon"
+    />
+    <script src="./js/jquery-3.6.1.min.js"></script>
+    <link rel="stylesheet" href="./style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@400;500;600&family=Montserrat:wght@500;600;700&display=swap" rel="stylesheet">
+    <!-- AlpineJS -->
+    <script
+      defer
+      src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
+
+    <title>Portal e-KPB</title>
+  </head>
+  <body class="relative bg-yellow-main-light -z-50">
+    <!-- Floating Button -->
+    <div
+      class="fixed  md:block -right-20 bottom-80 button w-32 h-14 z-50 overflow-visible"
+      x-data="{showBtn : false}"
+    >
+      <div
+        class="relative group hover:scale-105 duration-100 overflow-visible"
+        :class="{'right-24 md:right-40 opacity-100' : showBtn, 'right-20 opacity-0' : !showBtn}"
+        @scroll.window="showBtn = (window.pageYOffset > 100) ? true : false"
+        x-cloak
+      >
+        <a href="http://virtualkpb.rimpangdigital.com/" class="text-white font-bold text-center"
+          ><p>e-KPB TOUR<br />360</p></a
+        >
+        <img
+          src="./images/btn.svg"
+          class="absolute w-40 h-24 -top-7 -z-40 object-contain drop-shadow 0"
+          alt=""
+        />
+      </div>
+    </div>
+    <!-- Button End -->
+    <!-- Header -->
+    <header
+      class="fixed md:flex w-full top-0 h-20  py-2 justify-center md:px-10 lg:px-16 bg-yellow-main-light z-50"
+      x-data="{open:false}"
+    >
+    <div class="flex flex-col md:flex-row justify-between w-full mx-auto max-w-hd">
+      <div class="flex px-4 gap-2 md:gap-0 justify-between w-full md:w-auto">
+        <a href="index.html" class="flex shrink-0 items-end">
+          <img
+            src="./images/logo-ekpb.png"
+            class="w-20 shrink-0 h-auto"
+            alt=""
+          />
+        </a>
+        <div class="flex justify-center md:hidden">
+          <form class="searchbar flex content-baseline">
+            <input
+              type="search"
+              class="flex w-full md:hidden border-b-[3px] bg-transparent border-green-main focus:outline-none"
+              name=""
+              id=""
+            />
+            <button type="submit" class="ml-1">
+              <i class="fa-solid fa-magnifying-glass fa-xl"></i>
+            </button>
+          </form>
+        </div>
+        <button
+          class="shrink-0 relative burger w-12 md:hidden"
+          @click="open = !open"
+        >
+          <img
+            src="./images/bars.svg"
+            class="absolute bottom-0 w-12"
+            alt=""
+            x-show="!open"
+            x-transition
+            x-cloak
+          />
+          <img
+            src="./images/close.svg"
+            class="absolute bottom-0 w-12"
+            alt=""
+            x-show="open"
+            x-transition
+            x-cloak
+          />
+        </button>
+      </div>
+      <!-- Dropdown -->
+      <div class="hidden md:flex">
+        <div
+          class="md:flex gap-7"
+          :class="{'hidden' :!open, 'visible' :open}"
+          x-cloak
+        >
+          <ul
+            class="flex flex-col text-sm pb-4 shadow md:shadow-none md:pb-0 lg:text-base justify-end md:flex-row w-full bg-yellow-main-light text-green-main font-semibold md:gap-2 lg:gap-5"
+          >
+            <li
+              class="relative group px-4 my-4 md:px-0 md:my-0 flex md:text-center place-self-end bg-main-yellow md:rounded-xl w-full md:w-20"
+            >
+              <a href="index.html" class="w-full h-full z-10">HOME</a>
+              <div
+                class="absolute hidden md:block bottom-1 w-full h-2 bg-green-main-light z-0 opacity-0 group-hover:opacity-100 duration-300"
+              ></div>
+            </li>
+            <li
+              class="group flex flex-col px-4 my-4 md:px-0 md:my-0 relative hover:bg-white/10 duration-100 w-full md:w-auto place-self-end"
+              x-data="{dropdownOpen:false}"
+              @mouseover.outside="dropdownOpen = false"
+              @click.outside="dropdownOpen = false"
+            >
+              <a
+                href="javascript:void(0)"
+                class="place-self-center w-full h-full z-10"
+                @mouseover="dropdownOpen = true"
+                @click="dropdownOpen = true"
+              >
+                PROFILE
+              </a>
+              <div
+                class="absolute hidden md:block bottom-1 w-full h-2 bg-green-main-light z-0 opacity-0 group-hover:opacity-100 duration-300"
+              ></div>
+
+              <div
+                class="md:absolute w-full top-6 left-0 bg-white rounded-md text-main-gray md:w-56 shadow-md"
+                x-show="dropdownOpen"
+                x-transition
+                x-transition:leave.duration.400ms
+                x-cloak
+              >
+                <ul class="flex flex-col gap-y-2 py-2 bg-yellow-main">
+                  <li class="flex hover:bg-black/10">
+                    <a href="profile-about.html" class="h-full w-full px-5 py-2"
+                      >Tentang Kami</a
+                    >
+                  </li>
+                  <li class="flex hover:bg-black/10">
+                    <a href="profile-visi.html" class="h-full w-full px-5 py-2"
+                      >Visi dan Misi</a
+                    >
+                  </li>
+                </ul>
+              </div>
+            </li>
+            <li
+              class="relative group flex px-4 my-4 md:px-0 md:my-0 md:text-center place-self-end bg-main-yellow md:rounded-xl w-full md:w-20"
+            >
+              <a href="berita.html" class="w-full h-full z-10">BERITA</a>
+              <div
+                class="absolute hidden md:block bottom-1 w-full h-2 bg-green-main-light z-0 opacity-0 group-hover:opacity-100 duration-300"
+              ></div>
+            </li>
+
+            <li
+              class="group flex flex-col px-4 my-4 md:px-0 md:my-0 relative hover:bg-white/10 duration-100 w-full md:w-auto place-self-end"
+              x-data="{dropdownOpen:false}"
+              @click.outside="dropdownOpen = false"
+              @mouseover.outside="dropdownOpen = false"
+            >
+              <a
+                href="javascript:void(0)"
+                class="place-self-center w-full h-full z-10"
+                @click="dropdownOpen = !dropdownOpen"
+                @mouseover="dropdownOpen = true"
+              >
+                GALLERY
+              </a>
+              <div
+                class="absolute hidden md:block bottom-1 w-full h-2 bg-green-main-light z-0 opacity-0 group-hover:opacity-100 duration-300"
+              ></div>
+
+              <div
+                class="md:absolute w-full top-6 left-0 bg-white rounded-md text-main-gray md:w-56 shadow-md"
+                x-show="dropdownOpen"
+                x-transition
+                x-transition:leave.duration.500ms
+                x-cloak
+              >
+                <ul class="flex flex-col gap-y-2 py-2 bg-yellow-main">
+                  <li class="flex hover:bg-black/10">
+                    <a href="gallery-foto.html" class="h-full w-full px-5 py-2"
+                      >GALLERY FOTO</a
+                    >
+                  </li>
+                  <li class="flex hover:bg-black/10">
+                    <a href="gallery-video.html" class="h-full w-full px-5 py-2"
+                      >GALLERY VIDEO</a
+                    >
+                  </li>
+                </ul>
+              </div>
+            </li>
+            <li
+              class="relative group flex px-4 my-4 md:px-0 md:my-0 md:text-center md:place-self-end bg-main-yellow md:rounded-xl w-fit"
+            >
+              <a href="kontak.html" class="w-full h-full z-10">KONTAK</a>
+              <div
+                class="absolute hidden md:block bottom-1 w-full h-2 bg-green-main-light z-0 opacity-0 group-hover:opacity-100 duration-300"
+              ></div>
+            </li>
+            <li
+              class="relative group flex px-4 my-4 md:px-0 md:my-0 md:text-center md:place-self-end bg-main-yellow md:rounded-xl w-fit"
+            >
+              <a href="https://e-kpb.lampungprov.go.id/" class="w-full h-full z-10">LINK APLIKASI</a>
+              <div
+                class="absolute hidden md:block bottom-1 w-full h-2 bg-green-main-light z-0 opacity-0 group-hover:opacity-100 duration-300"
+              ></div>
+            </li>
+            <li
+              class="relative group flex px-4 my-4 md:px-0 md:my-0 md:text-center md:place-self-end bg-main-yellow md:rounded-xl w-fit"
+            >
+              <a href="http://virtualkpb.rimpangdigital.com/" class="w-full h-full z-10">TOUR 360</a>
+              <div
+                class="absolute hidden md:block bottom-1 w-full h-2 bg-green-main-light z-0 opacity-0 group-hover:opacity-100 duration-300"
+              ></div>
+            </li>
+            <li
+              class="hidden md:flex flex-col relative md:h-full hover:bg-white/10 duration-100 w-full md:w-auto justify-end"
+              x-data="{dropdownOpen:false}"
+              @click.outside="dropdownOpen = false"
+              x-cloak
+            >
+              <a
+                href="javascript:void(0)"
+                class="w-7 px-2 relative"
+                @click="dropdownOpen = !dropdownOpen"
+              >
+                <img
+                  src="./images/search.svg"
+                  class="absolute bottom-0 w-12"
+                  alt=""
+                  x-show="!dropdownOpen"
+                  x-transition
+                  x-cloak
+                />
+                <img
+                  src="./images/close.svg"
+                  class="absolute bottom-0 w-12"
+                  alt=""
+                  x-show="dropdownOpen"
+                  x-transition
+                  x-cloak
+                />
+              </a>
+              <div
+                class="md:absolute md:flex w-full md:justify-center md:content-center top-[72px] right-0 rounded-md text-main-gray md:w-fit md:px-4 md:h-20 shadow-md bg-yellow-main"
+                x-show="dropdownOpen"
+                x-transition
+                x-cloak
+              >
+                <ul class="flex items-center">
+                  <form
+                    action=""
+                    class="flex items-end"
+                    x-show="dropdownOpen"
+                    x-transition:enter="transition ease-out duration-500"
+                    x-transition:enter-start="translate-y-10 opacity-0"
+                    x-transition:enter-end="-translate-y-0 opacity-100"
+                    x-cloak
+                  >
+                    <input
+                      type="search"
+                      placeholder="Search..."
+                      class="bg-transparent focus:outline-none px-4 w-52 border-b border-black p-2"
+                      name=""
+                      id=""
+                    />
+                    <button
+                      type="submit"
+                      class="flex -ml-8 w-7 mb-2 bg-yellow-main"
+                    >
+                      <img src="./images/search.svg" alt="" />
+                    </button>
+                  </form>
+                </ul>
+              </div>
+            </li>
+          </ul>
+          <a
+            href="template.html"
+            class="burger w-9 hidden md:flex items-end hover:brightness-110"
+          >
+            <img src="./images/logo-wa.svg" alt="" />
+          </a>
+        </div>
+      </div>
+      <!-- Mobile -->
+      <div class="md:hidden">
+        <div
+          class="md:flex gap-7"
+          :class="{'hidden' :!open, 'visible' :open}"
+          x-cloak
+        >
+          <ul
+            class="flex flex-col text-sm py-8 gap-10 shadow md:shadow-none md:pb-0 lg:text-base justify-end md:flex-row w-full bg-yellow-main-light text-green-main font-semibold lg:gap-5"
+          >
+            <li
+              class="relative group px-4 md:px-0 md:my-0 flex md:text-center place-self-end bg-main-yellow md:rounded-xl w-full md:w-20"
+            >
+              <a href="index.html" class="w-full h-full z-10">HOME</a>
+              <div
+                class="absolute hidden md:block bottom-1 w-full h-2 bg-green-main-light z-0 opacity-0 group-hover:opacity-100 duration-300"
+              ></div>
+            </li>
+            <li
+              class="group flex flex-col px-4 md:px-0 md:my-0 relative duration-100 w-full md:w-auto place-self-end"
+              x-data="{dropdownOpen:false}"
+              @click.outside="dropdownOpen = false"
+            >
+              <a
+                href="javascript:void(0)"
+                class="flex justify-between place-self-center w-full h-full z-10"
+                @click="dropdownOpen = !dropdownOpen"
+              >
+                PROFILE <i class="fa-solid fa-chevron-down"></i>
+              </a>
+              <div
+                class="absolute hidden md:block bottom-1 w-full h-2 bg-green-main-light z-0 opacity-0 group-hover:opacity-100 duration-300"
+              ></div>
+
+              <div
+                class="md:absolute w-full top-6 left-0 bg-white rounded-md text-main-gray md:w-56 shadow-md"
+                x-show="dropdownOpen"
+                x-transition
+                x-transition:leave.duration.400ms
+                x-cloak
+              >
+                <ul class="flex flex-col gap-y-2 py-2 bg-yellow-main">
+                  <li class="flex hover:bg-black/10">
+                    <a href="profile-about.html" class="h-full w-full px-5 py-2"
+                      >Tentang Kami</a
+                    >
+                  </li>
+                  <li class="flex hover:bg-black/10">
+                    <a href="profile-visi.html" class="h-full w-full px-5 py-2"
+                      >Visi dan Misi</a
+                    >
+                  </li>
+                </ul>
+              </div>
+            </li>
+            <li
+              class="relative group flex px-4 md:px-0 md:my-0 md:text-center place-self-end bg-main-yellow md:rounded-xl w-full md:w-20"
+            >
+              <a href="berita.html" class="w-full h-full z-10">BERITA</a>
+              <div
+                class="absolute hidden md:block bottom-1 w-full h-2 bg-green-main-light z-0 opacity-0 group-hover:opacity-100 duration-300"
+              ></div>
+            </li>
+
+            <li
+              class="group flex flex-col px-4 md:px-0 md:my-0 relative duration-100 w-full md:w-auto place-self-end"
+              x-data="{dropdownOpen:false}"
+              @click.outside="dropdownOpen = false"
+            >
+              <a
+                href="javascript:void(0)"
+                class="flex justify-between place-self-center w-full h-full z-10"
+                @click="dropdownOpen = !dropdownOpen"
+              >
+                GALLERY <i class="fa-solid fa-chevron-down"></i>
+              </a>
+              <div
+                class="absolute hidden md:block bottom-1 w-full h-2 bg-green-main-light z-0 opacity-0 group-hover:opacity-100 duration-300"
+              ></div>
+
+              <div
+                class="md:absolute w-full top-6 left-0 bg-white rounded-md text-main-gray md:w-56 shadow-md"
+                x-show="dropdownOpen"
+                x-transition
+                x-transition:leave.duration.500ms
+                x-cloak
+              >
+                <ul class="flex flex-col gap-y-2 py-2 bg-yellow-main">
+                  <li class="flex hover:bg-black/10">
+                    <a href="gallery-foto.html" class="h-full w-full px-5 py-2"
+                      >GALLERY FOTO</a
+                    >
+                  </li>
+                  <li class="flex hover:bg-black/10">
+                    <a href="gallery-video.html" class="h-full w-full px-5 py-2"
+                      >GALLERY VIDEO</a
+                    >
+                  </li>
+                </ul>
+              </div>
+            </li>
+            <li
+              class="relative group flex px-4 md:px-0 md:my-0 md:text-center md:place-self-end bg-main-yellow md:rounded-xl w-fit"
+            >
+              <a href="kontak.html" class="w-full h-full z-10">KONTAK</a>
+              <div
+                class="absolute hidden md:block bottom-1 w-full h-2 bg-green-main-light z-0 opacity-0 group-hover:opacity-100 duration-300"
+              ></div>
+            </li>
+            <li
+              class="relative group flex px-4 md:px-0 md:my-0 md:text-center md:place-self-end bg-main-yellow md:rounded-xl w-fit"
+            >
+              <a href="https://e-kpb.lampungprov.go.id/" class="w-full h-full z-10">LINK APLIKASI</a>
+              <div
+                class="absolute hidden md:block bottom-1 w-full h-2 bg-green-main-light z-0 opacity-0 group-hover:opacity-100 duration-300"
+              ></div>
+            </li>
+            <li
+              class="relative group flex px-4 md:px-0 md:my-0 md:text-center md:place-self-end bg-main-yellow md:rounded-xl w-fit"
+            >
+              <a href="http://virtualkpb.rimpangdigital.com/" class="w-full h-full z-10">TOUR 360</a>
+              <div
+                class="absolute hidden md:block bottom-1 w-full h-2 bg-green-main-light z-0 opacity-0 group-hover:opacity-100 duration-300"
+              ></div>
+            </li>
+            <li
+              class="hidden md:flex flex-col relative md:h-full hover:bg-white/10 duration-100 w-full md:w-auto justify-end"
+              x-data="{dropdownOpen:false}"
+              @click.outside="dropdownOpen = false"
+              x-cloak
+            >
+              <a
+                href="javascript:void(0)"
+                class="w-10 px-2 relative"
+                @click="dropdownOpen = !dropdownOpen"
+              >
+                <img
+                  src="./images/search.svg"
+                  class="absolute bottom-0 w-12"
+                  alt=""
+                  x-show="!dropdownOpen"
+                  x-transition
+                  x-cloak
+                />
+                <img
+                  src="./images/close.svg"
+                  class="absolute bottom-0 w-12"
+                  alt=""
+                  x-show="dropdownOpen"
+                  x-transition
+                  x-cloak
+                />
+              </a>
+              <div
+                class="md:absolute md:flex w-full md:justify-center md:content-center top-[72px] right-0 rounded-md text-main-gray md:w-fit md:px-4 md:h-20 shadow-md bg-yellow-main"
+                x-show="dropdownOpen"
+                x-transition
+                x-cloak
+              >
+                <ul class="flex items-center">
+                  <form
+                    action=""
+                    class="flex items-end"
+                    x-show="dropdownOpen"
+                    x-transition:enter="transition ease-out duration-500"
+                    x-transition:enter-start="translate-y-10 opacity-0"
+                    x-transition:enter-end="-translate-y-0 opacity-100"
+                    x-cloak
+                  >
+                    <input
+                      type="search"
+                      placeholder="Search..."
+                      class="bg-transparent focus:outline-none px-4 w-52 border-b border-black p-2"
+                      name=""
+                      id=""
+                    />
+                    <button
+                      type="submit"
+                      class="flex -ml-8 w-7 mb-2 bg-yellow-main"
+                    >
+                      <img src="./images/search.svg" alt="" />
+                    </button>
+                  </form>
+                  <!-- <li class="flex hover:bg-black/10">
+                    <a href="berita.html" class="h-full w-full px-5 py-2"
+                      >GALLERY FOTO</a
+                    >
+                  </li>
+                  <li class="flex hover:bg-black/10">
+                    <a href="berita.html" class="h-full w-full px-5 py-2"
+                      >GALLERY VIDEO</a
+                    >
+                  </li> -->
+                </ul>
+              </div>
+            </li>
+          </ul>
+          <!-- <a href="" class="burger w-12 hidden md:flex items-end">
+            <img src="./images/search.svg" alt="" />
+          </a> -->
+          <a
+            href="download.html"
+            class="burger w-12 hidden md:flex items-end hover:brightness-110"
+          >
+            <img src="./images/logo-wa.svg" alt="" />
+          </a>
+        </div>
+      </div>
+      <!-- Dropdown End -->
+    </div>
+    </header>
+    <!-- Header End -->
+    <!-- Content -->
+    <section
+      class="relative pt-20 bg-yellow-main-light py-5 overflow-hidden -z-30 w-full min-h-[91vh] max-w-hd mx-auto"
+    >
+      <img
+        class="absolute top-20 left-0 object-cover h-[500px] w-full bg-left -z-20"
+        src="./images/banner.jpg"
+        alt=""
+      />
+      <div class="absolute w-full h-[500px] -z-10 bg-black/30 top-20"></div>
+      <div class="pt-20 px-4 md:ml-[20%] md:max-w-[600px]">
+        <h2 class="text-white text-left pl-10 mb-10 text-[36px]">
+          Visi dan Misi
+        </h2>
+        <div class="relative bg-white w-full">
+          <div class="absolute bg-orange-main w-[3px] h-16 left-8 -top-8"></div>
+          <div class="content pt-10 bg-yellow-main">
+            <div class="text px-10 text-green-main font-semibold">
+              <p class="title text-xl mb-8">
+                Visi dan Misi
+              </p>
+              <ul class="list-disc mb-8">
+                <li>VISI Pembangunan Daerah Provinsi Lampung periode 2019-2024 : “Rakyat Lampung Berjaya”</li>
+                <li>MISI ke 2 : Mewujudkan “good governance ” untuk meningkatkan kualitas dan pemerataan pelayanan publik</li>
+                <li>MISI ke 5 : Membangun kekuatan ekonomi masyarakat berbasis pertanian dan wilayah perdesaan yang seimbang dengan perkotaan.</li>
+                <li>Salah Satu Program Unggulan Provinsi Lampung di bidang Pertanian : PROGRAM KARTU PETANI BERJAYA [KPB]</li>
+              </ul>
+            </div>
+            <img src="./images/about.jpg" class="w-full h-max" alt="" />
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Content End -->
+    <!-- Footer -->
+    <footer>
+      <div class="bg-[url('./images/footer.svg')] h-11 w-full -mb-1"></div>
+      <div
+        class="footer  bg-green-main "
+      >
+      <div class="flex flex-col md:flex-row items-center md:items-start md:justify-between py-9 px-8 md:px-16 max-w-hd mx-auto">
+
+        <div class="hidden md:flex">
+          <ul
+            class="text-white font-bold text-center md:text-left text-sm md:text-xl my-5 md:my-0 leading-6"
+          >
+            <li><a href="index.html" class="hover:underline">HOME</a></li>
+            <li>
+              <a href="profile-about.html" class="hover:underline">PROFILE</a>
+            </li>
+            <li><a href="berita.html" class="hover:underline">BERITA</a></li>
+            <li>
+              <a href="gallery-foto.html" class="hover:underline">GALLERY</a>
+            </li>
+            <li><a href="kontak.html" class="hover:underline">KONTAK</a></li>
+            <li>
+              <a href="https://e-kpb.lampungprov.go.id/" class="hover:underline">LINK APLIKASI</a>
+            </li>
+          </ul>
+        </div>
+        <div class="flex">
+          <ul
+            class="text-white font-bold text-center md:text-left text-sm md:text-xl my-5 md:my-0"
+          >
+            <li class="mb-2">
+              <a
+                href="berita.html"
+                class="underline hover:text-yellow-main-light"
+                >Berita</a
+              >
+            </li>
+            <li class="mb-2">
+              <a
+                href="download.html"
+                class="underline hover:text-yellow-main-light"
+                >Download</a
+              >
+            </li>
+            <li class="mb-2">
+              <a
+                href="agenda.html"
+                class="underline hover:text-yellow-main-light"
+                >Agenda</a
+              >
+            </li>
+            <li>
+              <a href="gallery-foto.html" class="hover:text-yellow-main-light">
+                <span class="underline">Album</span> Foto</a
+              >
+            </li>
+          </ul>
+        </div>
+
+        <div
+          class="text-white font-bold text-xs leading-5 md:leading-8 my-5 md:my-0"
+        >
+          <p>
+            <span class="text-sm md:text-xl"> Hubungi Kami </span> <br />Alamat:
+            Jl. WR.Mongonsidi No.69 Teluk Betung<br />
+            Telepon: 0821 11211103<br />Email: e-kpb@lampungprov.go.id
+          </p>
+        </div>
+        <div
+          class="social text-white font-bold text-center pt-7 md:pt-0 md:text-xl"
+        >
+          <p>ikuti kami:</p>
+          <div class="flex justify-center gap-2 mt-8">
+            <a
+              href=""
+              class="rounded-full bg-white w-10 h-10 p-3 group hover:scale-105 duration-150"
+            >
+              <img
+                src="./images/logo-fb.svg"
+                class="group-hover:scale-125 duration-150"
+                alt=""
+              />
+            </a>
+            <a
+              href=""
+              class="rounded-full bg-white w-10 h-10 p-3 group hover:scale-105 duration-150"
+            >
+              <img
+                src="./images/logo-tw.svg"
+                class="group-hover:scale-125 duration-150"
+                alt=""
+              />
+            </a>
+            <a
+              href=""
+              class="rounded-full bg-white w-10 h-10 p-3 group hover:scale-105 duration-150"
+            >
+              <img
+                src="./images/logo-ig.svg"
+                class="group-hover:scale-125 duration-150"
+                alt=""
+              />
+            </a>
+            <a
+              href=""
+              class="rounded-full bg-white w-10 h-10 p-3 group hover:scale-105 duration-150"
+            >
+              <img
+                src="./images/logo-yt.svg"
+                class="group-hover:scale-125 duration-150"
+                alt=""
+              />
+            </a>
+          </div>
+        </div>
+      </div>
+      </div>
+    </footer>
+    <!-- Footer End -->
+  </body>
+  <script
+    src="https://kit.fontawesome.com/3bf8993271.js"
+    crossorigin="anonymous"
+  ></script>
+</html>
